@@ -186,9 +186,9 @@ Byte CPU::FetchByte(u32& cycles, Memory& memory)
 Word CPU::FetchWord(u32& cycles, Memory& memory)
 {
 	// 6502 is little endian
-	Word data = memory[PC];
+	Word data = (memory[PC] << 8);
 	PC++;
-	data |= (memory[PC] << 8);
+	data |= memory[PC];
 	PC++;
 	cycles -= 2;
 	return data;

@@ -5,12 +5,12 @@ using Byte = unsigned char;
 using Word = unsigned short;
 using u32 = unsigned int;
 
-const Word START_PROGRAM = 0x0A00;
-const Word STACK_POINTER = 0x0100;
+const Word STACK_POINTER = 0x0010;
+const Word START_PROGRAM = 0x0020;
 
 struct Memory
 {
-	static constexpr u32 MAX_MEM = 1024 * 64;
+	static constexpr u32 MAX_MEM = 0x1000;
 	Byte Data[MAX_MEM];
 	void Init();
 
