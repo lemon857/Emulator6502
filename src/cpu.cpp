@@ -104,6 +104,63 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			LoadRegisterSetStatus(Y);
 		} break;
 
+		case INS_STA_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			memory[zeroPageAddr] = A;
+		} break;
+		case INS_STA_ZPX: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += X;
+			cycles--;
+			memory[zeroPageAddr] = A;
+		} break;
+		case INS_STA_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			memory[addr] = A;
+		} break;
+		case INS_STA_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			memory[addr] = A;
+		} break;
+		case INS_STA_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += Y;
+			cycles--;
+			memory[addr] = A;
+		} break;
+
+		case INS_STX_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			memory[zeroPageAddr] = X;
+		} break;
+		case INS_STX_ZPY: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += Y;
+			cycles--;
+			memory[zeroPageAddr] = X;
+		} break;
+		case INS_STX_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			memory[addr] = X;
+		} break;
+
+		case INS_STY_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			memory[zeroPageAddr] = Y;
+		} break;
+		case INS_STY_ZPX: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += X;
+			cycles--;
+			memory[zeroPageAddr] = Y;
+		} break;
+		case INS_STY_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			memory[addr] = Y;
+		} break;
+
 		case INS_AND_IM: {
 			Byte value = FetchByte(cycles, memory);
 			A &= value;

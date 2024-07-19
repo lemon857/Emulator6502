@@ -14,6 +14,20 @@ struct CPU
 		INS_AND_ABSX = 0x3D,	// logical A and from (absolute address + value X)
 		INS_AND_ABSY = 0x39,	// logical A and from (absolute address + value Y)
 
+		INS_STA_ZP = 0x85,		// store value from A to (ZeroPage (8-bit) address)
+		INS_STA_ZPX = 0x95,		// store value from A to (ZeroPage (8-bit) address + value X)
+		INS_STA_ABS = 0x8D,		// store value from A to (absolute address)
+		INS_STA_ABSX = 0x9D,	// store value from A to (absolute address + value X)
+		INS_STA_ABSY = 0x99,	// store value from A to (absolute address + value Y)
+
+		INS_STX_ZP = 0x86,		// store value from X to (ZeroPage (8-bit) address)
+		INS_STX_ZPY = 0x96,		// store value from X to (ZeroPage (8-bit) address + value Y)
+		INS_STX_ABS = 0x8E,		// store value from X to (absolute address)
+
+		INS_STY_ZP = 0x84,		// store value from Y to (ZeroPage (8-bit) address)
+		INS_STY_ZPX = 0x94,		// store value from Y to (ZeroPage (8-bit) address + value X)
+		INS_STY_ABS = 0x8C,		// store value from Y to (absolute address)
+
 		INS_LDA_IM = 0xA9,		// set value A
 		INS_LDA_ZP = 0xA5,		// set value A (from ZeroPage (8-bit) address)
 		INS_LDA_ZPX = 0xB5,		// set value A (from ZeroPage (8-bit) address + value X )

@@ -321,6 +321,84 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 			}
 		}
+		else if (ins == "sta")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_STA_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_STA_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+		}
+		else if (ins == "stx")
+		{
+		Word A;
+		int p, len;
+		std::string arg = arg1;
+		len = arg.length();
+		if ((p = arg.find('$')) != -1)
+		{
+			A = StrToWord(arg.substr(p + 1));
+			if (len == 3)					// ZeroPointer
+			{
+				memory[pos++] = CPU::INS_STX_ZP;
+				memory[pos++] = A;
+			}
+			else if (len > 3 && len <= 5)	// absolute address
+			{
+				memory[pos++] = CPU::INS_STX_ABS;
+				memory[pos++] = (A & 0xFF00) >> 8;
+				memory[pos++] = (A & 0x00FF);
+			}
+			else
+			{
+				ErrorHandler("error too much address at: " + std::to_string(pos));
+			}
+		}
+		}
+		else if (ins == "sty")
+		{
+		Word A;
+		int p, len;
+		std::string arg = arg1;
+		len = arg.length();
+		if ((p = arg.find('$')) != -1)
+		{
+			A = StrToWord(arg.substr(p + 1));
+			if (len == 3)					// ZeroPointer
+			{
+				memory[pos++] = CPU::INS_STY_ZP;
+				memory[pos++] = A;
+			}
+			else if (len > 3 && len <= 5)	// absolute address
+			{
+				memory[pos++] = CPU::INS_STY_ABS;
+				memory[pos++] = (A & 0xFF00) >> 8;
+				memory[pos++] = (A & 0x00FF);
+			}
+			else
+			{
+				ErrorHandler("error too much address at: " + std::to_string(pos));
+			}
+		}
+		}
 	}
 	else
 	{
@@ -464,6 +542,90 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 			}
 		}
+		else if (ins == "sta")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_STA_ZPX;
+						memory[pos++] = A;
+					}
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_STA_ABSX;
+						memory[pos++] = (A & 0xFF00) >> 8;
+						memory[pos++] = (A & 0x00FF);
+					}
+					else if (arg2 == "Y")
+					{
+						memory[pos++] = CPU::INS_STA_ABSY;
+						memory[pos++] = (A & 0xFF00) >> 8;
+						memory[pos++] = (A & 0x00FF);
+					}
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}			
+		}
+		else if (ins == "stx")
+		{
+		Word A;
+		int p, len;
+		std::string arg = arg1;
+		len = arg.length();
+		if ((p = arg.find('$')) != -1)
+		{
+			A = StrToWord(arg.substr(p + 1));
+			if (len == 3)					// ZeroPointer
+			{
+				if (arg2 == "Y")
+				{
+					memory[pos++] = CPU::INS_STX_ZPY;
+					memory[pos++] = A;
+				}
+			}
+			else
+			{
+				ErrorHandler("error invalid second argument at: " + std::to_string(pos));
+			}
+		}
+		}
+		else if (ins == "sty")
+		{
+		Word A;
+		int p, len;
+		std::string arg = arg1;
+		len = arg.length();
+		if ((p = arg.find('$')) != -1)
+		{
+			A = StrToWord(arg.substr(p + 1));
+			if (len == 3)					// ZeroPointer
+			{
+				if (arg2 == "X")
+				{
+					memory[pos++] = CPU::INS_STY_ZPX;
+					memory[pos++] = A;
+				}
+			}
+			else
+			{
+				ErrorHandler("error invalid second argument at: " + std::to_string(pos));
+			}
+		}
+		}
 	}
 }
 
@@ -498,13 +660,15 @@ void Assembler::ErrorHandler(std::string text)
 void Assembler::SaveMemory(std::string path, Memory& memory)
 {
 	std::ofstream f;
-	f.open(path, std::ios::binary);
+	f.open(path, std::ios::binary | std::ios::out);
+	if (!f.is_open()) ErrorHandler("error open file for write: " + path);
 	f.write((char*)memory.Data, memory.MAX_MEM * sizeof(Byte));
 }
 
 void Assembler::LoadMemory(std::string path, Memory& memory)
 {
 	std::ifstream f;
-	f.open(path, std::ios::binary);
+	f.open(path, std::ios::binary | std::ios::in);
+	if (!f.is_open()) ErrorHandler("error open file for read: " + path);
 	f.read((char*)memory.Data, memory.MAX_MEM * sizeof(Byte));
 }

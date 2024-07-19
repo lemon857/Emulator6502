@@ -5,8 +5,8 @@ using Byte = unsigned char;
 using Word = unsigned short;
 using u32 = unsigned int;
 
-const Word STACK_POINTER = 0x0010;
-const Word START_PROGRAM = 0x0020;
+const Word STACK_POINTER = 0x0100; // stack 0x0100 - 0x01FF
+const Word START_PROGRAM = 0x0000;
 
 struct Memory
 {

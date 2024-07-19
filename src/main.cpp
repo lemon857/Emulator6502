@@ -9,10 +9,10 @@ int main(int argc, char** argv)
 	CPU my_cpu;
 	my_cpu.Reset(mem);
 
-	//Assembler::Compile("G:/VS proj/Emulate6502/build/Debug/test.asm6502", mem);
-	Assembler::LoadMemory("G:/VS proj/Emulate6502/build/Debug/test.mem", mem); 
-	//Assembler::SaveMemory("G:/VS proj/Emulate6502/build/Debug/test.mem", mem); 
-	my_cpu.Execute(25, mem);
+	Assembler::Compile("G:/VS proj/Emulate6502/build/Debug/test.asm6502", mem);
+	//Assembler::LoadMemory("G:/VS proj/Emulate6502/build/Debug/test.mem", mem); 
+	my_cpu.Execute(64, mem);
+	Assembler::SaveMemory("G:/VS proj/Emulate6502/build/Debug/test.mem", mem);
 	//// start program
 	//mem[0xFFFC] = CPU::INS_JMP;
 	//mem[0xFFFD] = 0xE0;
