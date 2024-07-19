@@ -10,98 +10,135 @@ void CPU::Execute(u32 cycles, Memory& memory)
 		case INS_LDA_IM: {
 			Byte value = FetchByte(cycles, memory);
 			A = value;
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 		case INS_LDA_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			A = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 		case INS_LDA_ZPX: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			zeroPageAddr += X;
 			cycles--;
 			A = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 		case INS_LDA_ABS: {
 			Word addr = FetchWord(cycles, memory);
 			A = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 		case INS_LDA_ABSX: {
 			Word addr = FetchWord(cycles, memory);
 			addr += X;
 			cycles--;
 			A = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 		case INS_LDA_ABSY: {
 			Word addr = FetchWord(cycles, memory);
 			addr += Y;
 			cycles--;
 			A = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(A);
 		} break;
 
 		case INS_LDX_IM: {
 			Byte value = FetchByte(cycles, memory);
 			X = value;
-			LDASetStatus();
+			LoadRegisterSetStatus(X);
 		} break;
 		case INS_LDX_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			X = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(X);
 		} break;
 		case INS_LDX_ZPY: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			zeroPageAddr += Y;
 			cycles--;
 			X = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(X);
 		} break;
 		case INS_LDX_ABS: {
 			Word addr = FetchWord(cycles, memory);
 			X = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(X);
 		} break;
 		case INS_LDX_ABSY: {
 			Word addr = FetchWord(cycles, memory);
 			addr += Y;
 			cycles--;
 			X = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(X);
 		} break;
 
 		case INS_LDY_IM: {
 			Byte value = FetchByte(cycles, memory);
 			Y = value;
-			LDASetStatus();
+			LoadRegisterSetStatus(Y);
 		} break;
 		case INS_LDY_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			Y = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(Y);
 		} break;
 		case INS_LDY_ZPX: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			zeroPageAddr += X;
 			cycles--;
 			Y = ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(Y);
 		} break;
 		case INS_LDY_ABS: {
 			Word addr = FetchWord(cycles, memory);
 			Y = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(Y);
 		} break;
 		case INS_LDY_ABSX: {
 			Word addr = FetchWord(cycles, memory);
 			addr += X;
 			cycles--;
 			Y = ReadByte(cycles, addr, memory);
-			LDASetStatus();
+			LoadRegisterSetStatus(Y);
+		} break;
+
+		case INS_AND_IM: {
+			Byte value = FetchByte(cycles, memory);
+			A &= value;
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			A &= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_ZPX: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += X;
+			cycles--;
+			A &= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
 		} break;
 
 		case INS_JMP: {
@@ -131,8 +168,8 @@ void CPU::Execute(u32 cycles, Memory& memory)
 
 void CPU::Reset(Memory& memory)
 {
-	PC = 0xFFFC; // program start address
-	SP = 0x0100; // stack address
+	PC = START_PROGRAM; // program start address
+	SP = STACK_POINTER; // stack address
 	C = Z = I = D = B = V = N = 0;
 	A = X = Y = 0;
 	memory.Init();
@@ -171,8 +208,8 @@ Byte CPU::ReadByte(u32& cycles, Word& addr, Memory& memory)
 	return data;
 }
 
-inline void CPU::LDASetStatus()
+inline void CPU::LoadRegisterSetStatus(Byte value)
 {
-	Z = (A == 0);
-	N = (A & 0b10000000) > 0;
+	Z = (value == 0);
+	N = (value & 0b10000000) > 0;
 }
