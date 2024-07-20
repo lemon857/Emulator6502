@@ -2,6 +2,13 @@
 #include "cpu.h"
 
 #include <iostream>
+#include <string>
+
+std::string get_path(std::string exePath)
+{
+	int pos = exePath.rfind('\\');
+	return exePath.substr(0, pos);
+}
 
 int main(int argc, char** argv)
 {
@@ -9,10 +16,12 @@ int main(int argc, char** argv)
 	CPU my_cpu;
 	my_cpu.Reset(mem);
 
-	//Assembler::Compile("path", mem);
+	std::string path = get_path(argv[0]);
+
 	//Assembler::LoadMemory("path", mem); 
-	//my_cpu.Execute(64, mem);
-	//Assembler::SaveMemory("path", mem);
+	Assembler::Compile(path + "\\test.asm6502", mem);
+	my_cpu.Execute(512, mem);
+	Assembler::SaveMemory(path + "\\test.mem", mem);
 	//// start program
 	//mem[0xFFFC] = CPU::INS_JMP;
 	//mem[0xFFFD] = 0xE0;

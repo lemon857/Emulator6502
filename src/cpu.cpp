@@ -239,6 +239,25 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			LoadRegisterSetStatus(A);
 		} break;
 
+		case INS_BEQ: {
+			Byte offset = FetchByte(cycles, memory);
+			if (Z == 1)
+			{
+				PC += offset;
+				cycles--;
+			}
+		}	break;
+
+		case INS_BNE: {
+			Byte offset = FetchByte(cycles, memory);
+			if (Z == 0)
+			{
+				signed char of = offset;
+				PC += of;
+				cycles--;
+			}
+		}	break;
+
 		case INS_JMP: {
 			Word subAddr = FetchWord(cycles, memory);
 			PC = subAddr;
