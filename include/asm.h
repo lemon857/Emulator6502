@@ -13,10 +13,7 @@ struct RequirePointName
 
 struct Assembler
 {
-	Assembler()
-	{
-
-	}
+	Assembler() {}
 
 	static void Compile(std::string sourceCodePath, Memory& memory);
 	static void HandleIns(std::string ins, std::string arg1, std::string arg2, Memory& memory, Word& pos);

@@ -7,6 +7,47 @@ void CPU::Execute(u32 cycles, Memory& memory)
 		Byte ins = FetchByte(cycles, memory);
 		switch (ins)
 		{
+		case INS_TAX: {
+			X = A;
+			cycles--;
+			LoadRegisterSetStatus(X);
+		}	break;
+		case INS_TXA: {
+			A = X;
+			cycles--;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_TAY: {
+			Y = A;
+			cycles--;
+			LoadRegisterSetStatus(Y);
+		}	break;
+		case INS_TYA: {
+			A = Y;
+			cycles--;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_DEX: {
+			X--;
+			cycles--;
+			LoadRegisterSetStatus(X);
+		}	break;
+		case INS_INX: {
+			X++;
+			cycles--;
+			LoadRegisterSetStatus(X);
+		}	break;
+		case INS_DEY: {
+			Y--;
+			cycles--;
+			LoadRegisterSetStatus(Y);
+		}	break;
+		case INS_INY: {
+			Y++;
+			cycles--;
+			LoadRegisterSetStatus(Y);
+		}	break;
+
 		case INS_LDA_IM: {
 			Byte value = FetchByte(cycles, memory);
 			A = value;

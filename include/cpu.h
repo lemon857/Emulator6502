@@ -7,6 +7,15 @@ struct CPU
 {
 	// opcodes
 	static constexpr Byte
+		INS_TAX = 0xAA,			// transfer A to X
+		INS_TXA = 0x8A,			// transfer X to A
+		INS_DEX = 0xCA,			// decrement X
+		INS_INX = 0xE8,			// increment X
+		INS_TAY = 0xA8,			// transfer Y to A
+		INS_TYA = 0x98,			// transfer A to Y
+		INS_DEY = 0x88,			// decrement Y
+		INS_INY = 0xC8,			// increment Y
+
 		INS_AND_IM = 0x29,		// logical A and value
 		INS_AND_ZP = 0x25,		// logical A and from (ZeroPage (8-bit) address)
 		INS_AND_ZPX = 0x35,		// logical A and from (ZeroPage (8-bit) address + value X)

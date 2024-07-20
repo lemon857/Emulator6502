@@ -399,6 +399,46 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			}
 		}
 		}
+		else if (ins == "tax")
+		{
+			memory[pos] = CPU::INS_TAX;
+			pos++;
+		}
+		else if (ins == "txa")
+		{
+			memory[pos] = CPU::INS_TXA;
+			pos++;
+		}
+		else if (ins == "tay")
+		{
+			memory[pos] = CPU::INS_TAY;
+			pos++;
+		}
+		else if (ins == "tya")
+		{
+			memory[pos] = CPU::INS_TYA;
+			pos++;
+		}
+		else if (ins == "dex")
+		{
+			memory[pos] = CPU::INS_DEX;
+			pos++;
+		}
+		else if (ins == "inx")
+		{
+			memory[pos] = CPU::INS_INX;
+			pos++;
+		}
+		else if (ins == "dey")
+		{
+			memory[pos] = CPU::INS_DEY;
+			pos++;
+		}
+		else if (ins == "iny")
+		{
+			memory[pos] = CPU::INS_INY;
+			pos++;
+		}
 	}
 	else
 	{
