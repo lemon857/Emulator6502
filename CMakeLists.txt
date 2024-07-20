@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-project(Emulate6502)
+set(PROJECT_NAME Emulator6502)
 
-add_executable(Emulate6502 
+project(${PROJECT_NAME})
+
+add_executable(${PROJECT_NAME} 
 	src/main.cpp
 	src/asm.cpp
 	include/asm.h
@@ -12,4 +14,4 @@ add_executable(Emulate6502
 	include/memory.h	
 	)
 
-target_include_directories(Emulate6502 PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC include)

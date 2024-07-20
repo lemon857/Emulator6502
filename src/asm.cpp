@@ -15,7 +15,7 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 	f.open(sourceCodePath);
 	if (!f.is_open())
 	{
-		std::cout << "Failed to open file\n";
+		ErrorHandler("error open file for read: " + sourceCodePath);
 		return;
 	}
 
@@ -701,7 +701,11 @@ void Assembler::SaveMemory(std::string path, Memory& memory)
 {
 	std::ofstream f;
 	f.open(path, std::ios::binary | std::ios::out);
-	if (!f.is_open()) ErrorHandler("error open file for write: " + path);
+	if (!f.is_open())
+	{
+		ErrorHandler("error open file for write: " + path);
+		return;
+	}
 	f.write((char*)memory.Data, memory.MAX_MEM * sizeof(Byte));
 }
 
@@ -709,6 +713,10 @@ void Assembler::LoadMemory(std::string path, Memory& memory)
 {
 	std::ifstream f;
 	f.open(path, std::ios::binary | std::ios::in);
-	if (!f.is_open()) ErrorHandler("error open file for read: " + path);
+	if (!f.is_open())
+	{
+		ErrorHandler("error open file for read: " + path);
+		return;
+	}
 	f.read((char*)memory.Data, memory.MAX_MEM * sizeof(Byte));
 }
