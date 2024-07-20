@@ -84,6 +84,22 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			A = ReadByte(cycles, addr, memory);
 			LoadRegisterSetStatus(A);
 		} break;
+		case INS_LDA_INDX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A = ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_LDA_INDY: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += Y;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A = ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
 
 		case INS_LDX_IM: {
 			Byte value = FetchByte(cycles, memory);
@@ -262,6 +278,11 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			Word subAddr = FetchWord(cycles, memory);
 			PC = subAddr;
 		} break;
+		case INS_JMP_IND: {
+			Word ZPAddr = FetchWord(cycles, memory);
+			Word addr = ReadWord(cycles, ZPAddr, memory);
+			PC = addr;
+		} break;
 		case INS_JSR: {
 			Word subAddr = FetchWord(cycles, memory);
 			memory.WriteWord(PC - 1, SP, cycles);
@@ -318,10 +339,19 @@ Byte CPU::ReadByteFromZeroPage(u32& cycles, Byte& addr, Memory& memory)
 	return data;
 }
 
-Byte CPU::ReadByte(u32& cycles, Word& addr, Memory& memory)
+Byte CPU::ReadByte(u32& cycles, Word addr, Memory& memory)
 {
 	Byte data = memory[addr];
 	cycles--;
+	return data;
+}
+
+Word CPU::ReadWord(u32& cycles, Word addr, Memory& memory)
+{
+	// 6502 is little endian
+	Word data = (memory[addr] << 8);
+	data |= memory[addr];
+	cycles -= 2;
 	return data;
 }
 

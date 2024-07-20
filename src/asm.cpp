@@ -127,7 +127,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					ErrorHandler("error too much address at: " + std::to_string(pos));
 				}
-			}			
+
+			}
 		}
 		else if (ins == "ldx")
 		{
@@ -476,35 +477,54 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			int p, len;
 			std::string arg = arg1;
 			len = arg.length();
-			if ((p = arg.find('$')) != -1)
+			if ((p = arg.find('(')) == -1)
 			{
-				A = StrToWord(arg.substr(p + 1));				
-				if (len == 3)					// ZeroPointer
+				if ((p = arg.find('$')) != -1)
 				{
-					if (arg2 == "X")
+					A = StrToWord(arg.substr(p + 1));
+					if (len == 3)					// ZeroPointer
 					{
-						memory[pos++] = CPU::INS_LDA_ZPX;
-						memory[pos++] = A;
+						if (arg2 == "X")
+						{
+							memory[pos++] = CPU::INS_LDA_ZPX;
+							memory[pos++] = A;
+						}
+					}
+					else if (len > 3 && len <= 5)	// absolute address
+					{
+						if (arg2 == "X")
+						{
+							memory[pos++] = CPU::INS_LDA_ABSX;
+							memory[pos++] = (A & 0xFF00) >> 8;
+							memory[pos++] = (A & 0x00FF);
+						}
+						else if (arg2 == "Y")
+						{
+							memory[pos++] = CPU::INS_LDA_ABSY;
+							memory[pos++] = (A & 0xFF00) >> 8;
+							memory[pos++] = (A & 0x00FF);
+						}
+					}
+					else
+					{
+						ErrorHandler("error too much address at: " + std::to_string(pos));
 					}
 				}
-				else if (len > 3 && len <= 5)	// absolute address
+			}
+			else // indirect
+			{
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 1));
+				if (arg2 == "X")
 				{
-					if (arg2 == "X")
-					{
-						memory[pos++] = CPU::INS_LDA_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
-					}
-					else if (arg2 == "Y")
-					{
-						memory[pos++] = CPU::INS_LDA_ABSY;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
-					}
+					memory[pos++] = CPU::INS_LDA_INDX;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
 				}
-				else
+				else if (arg2 == "Y")
 				{
-					ErrorHandler("error too much address at: " + std::to_string(pos));
+					memory[pos++] = CPU::INS_LDA_INDY;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
 				}
 			}
 		}
@@ -646,7 +666,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					ErrorHandler("error too much address at: " + std::to_string(pos));
 				}
-			}			
+
+			}
 		}
 		else if (ins == "stx")
 		{

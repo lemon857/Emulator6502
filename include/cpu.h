@@ -16,6 +16,8 @@ struct CPU
 		INS_DEY = 0x88,			// decrement Y
 		INS_INY = 0xC8,			// increment Y
 
+		INS_ADC_IM = 0x69,		// add 
+
 		INS_AND_IM = 0x29,		// logical A and value
 		INS_AND_ZP = 0x25,		// logical A and from (ZeroPage (8-bit) address)
 		INS_AND_ZPX = 0x35,		// logical A and from (ZeroPage (8-bit) address + value X)
@@ -43,6 +45,8 @@ struct CPU
 		INS_LDA_ABS = 0xAD,		// set value A (from absolute address)
 		INS_LDA_ABSX = 0xBD,	// set value A (from absolute address + value X)
 		INS_LDA_ABSY = 0xB9,	// set value A (from absolute address + value Y)
+		INS_LDA_INDX = 0xA1,	// set value A from address -> (from absolute address + value X)
+		INS_LDA_INDY = 0xB1,	// set value A from address -> (from absolute address + value Y)
 
 		INS_LDX_IM = 0xA2,		// set value X
 		INS_LDX_ZP = 0xA6,		// set value X from (ZeroPage (8-bit) address)
@@ -60,6 +64,7 @@ struct CPU
 		INS_BNE = 0xD0,			// jump to subroutine 
 
 		INS_JMP = 0x4C,			// jump to address
+		INS_JMP_IND = 0x6C,		// jump to address
 		INS_JSR = 0x20,			// jump to subroutine 
 		INS_RTS = 0x60;			// return from subroutine
 
@@ -85,7 +90,9 @@ struct CPU
 
 	Byte ReadByteFromZeroPage(u32& cycles, Byte& addr, Memory& memory);
 
-	Byte ReadByte(u32& cycles, Word& addr, Memory& memory);
+	Byte ReadByte(u32& cycles, Word addr, Memory& memory);
+
+	Word ReadWord(u32& cycles, Word addr, Memory& memory);
 
 	inline void LoadRegisterSetStatus(Byte value);
 
