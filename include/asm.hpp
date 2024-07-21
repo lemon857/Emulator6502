@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "memory.h"
+#include "memory.hpp"
 
 struct Assembler
 {

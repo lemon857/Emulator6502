@@ -7,11 +7,11 @@ project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME} 
 	src/main.cpp
 	src/asm.cpp
-	include/asm.h
+	include/asm.hpp
 	src/cpu.cpp
-	include/cpu.h
+	include/cpu.hpp
 	src/memory.cpp
-	include/memory.h	
+	include/memory.hpp	
 	)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)

@@ -3,8 +3,8 @@
 #include <queue>
 #include <map>
 
-#include "asm.h"
-#include "cpu.h"
+#include "asm.hpp"
+#include "cpu.hpp"
 
 struct RequirePointName
 {

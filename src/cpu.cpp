@@ -1,4 +1,4 @@
-#include "cpu.h"
+#include "cpu.hpp"
 
 void CPU::Execute(u32 cycles, Memory& memory)
 {

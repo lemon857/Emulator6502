@@ -1,7 +1,7 @@
 #ifndef _CPU_H_
 #define _CPU_H_
 
-#include "memory.h"
+#include "memory.hpp"
 
 const Word STACK_POINTER = 0x01FF; // stack 0x0100 - 0x01FF
 

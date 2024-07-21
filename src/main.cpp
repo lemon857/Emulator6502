@@ -1,5 +1,6 @@
-#include "asm.h"
-#include "cpu.h"
+#include "asm.hpp"
+#include "cpu.hpp"
+#include "memory.hpp"
 
 #include <iostream>
 #include <string>
