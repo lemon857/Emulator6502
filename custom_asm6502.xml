@@ -24,7 +24,7 @@
             <Keywords name="Folders in comment, open"></Keywords>
             <Keywords name="Folders in comment, middle"></Keywords>
             <Keywords name="Folders in comment, close"></Keywords>
-            <Keywords name="Keywords1">lda ldx ldy sta stx sty rts jmp jsr and tax txa tay tya dex dey inx iny bne beq txs tsx pha pla dec inc</Keywords>
+            <Keywords name="Keywords1">lda ldx ldy sta stx sty rts jmp jsr and tax txa tay tya dex dey inx iny bne beq txs tsx pha pla dec inc adc bcs bcc clc clv sec</Keywords>
             <Keywords name="Keywords2"># $</Keywords>
             <Keywords name="Keywords3">.</Keywords>
             <Keywords name="Keywords4">*</Keywords>

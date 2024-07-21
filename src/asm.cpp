@@ -6,6 +6,13 @@
 #include "asm.h"
 #include "cpu.h"
 
+struct RequirePointName
+{
+	std::string name;
+	Word posReq;
+	bool is_branch = false;
+};
+
 static std::map<std::string, Word> pointNames;	// if line start '.' it's point name
 static std::queue<RequirePointName> pountReq;	// if args start '.' it's point name
 
@@ -27,7 +34,7 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 		// delete comment
 		if ((p = line.find(';')) != -1) line = line.substr(0, (p-1) < 0 ? 0 : (p-1));
 		// clear end spaces
-		while (!line.empty() && line[line.length() - 1] == ' ') line = line.substr(0, line.length() - 2);
+		while (!line.empty() && line[line.length() - 1] == ' ') line = line.substr(0, line.length() - 1);
 		if (line.empty()) continue;
 		// save pos next command after pointer 
 		if (line[0] == '.') 
@@ -71,6 +78,10 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 			arg1 = line.substr(posSpace + 1, posPoint - posSpace - 1);
 			arg2 = line.substr(posPoint + 1);
 			while (arg2[0] == ' ') { arg2 = arg2.substr(1); }
+			if (arg2.length() != 1)
+			{
+				ErrorHandler("invalid syntaxis arg2 have too long lenght: " + arg2);
+			}
 			HandleIns(ins, arg1, arg2, memory, prgpos);
 		}
 	}
@@ -82,14 +93,23 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 		auto it = pointNames.find(ptr.name);
 		if (it != pointNames.end())
 		{
-			Word A = it->second;
-			memory[ptr.posReq] = (A & 0xFF00) >> 8;
-			memory[ptr.posReq+1] = (A & 0x00FF);
+			if (ptr.is_branch)
+			{
+				Word A = it->second;
+				memory[ptr.posReq] = A - ptr.posReq - 1;
+			}			
+			else
+			{
+				Word A = it->second;
+				memory[ptr.posReq] = (A & 0xFF00) >> 8;
+				memory[ptr.posReq + 1] = (A & 0x00FF);
+			}
 		}
 		else
 			ErrorHandler("Undefined name: " + ptr.name);
 		pountReq.pop();
 	}
+	std::cout << "Successful compile!\n";
 }
 /*else if (arg[0] == '.')
 			{
@@ -226,10 +246,31 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			Word A;
 			int p, len;
 			std::string arg = arg1;
-			if ((p = arg.find('*')) != -1 && (arg.find('+') != -1 || arg.find('-') != -1))
+			if (arg.find('.') != -1)
 			{
+				auto it = pointNames.find(arg);
+				if (it != pointNames.end())
+				{
+					A = it->second;
+					memory[pos++] = CPU::INS_BEQ;
+					memory[pos++] = A - pos;
+				}
+				else
+				{
+					RequirePointName rpn;
+					rpn.name = arg;
+					memory[pos++] = CPU::INS_BEQ;
+					rpn.posReq = pos;
+					rpn.is_branch = true;
+					pos++;
+					pountReq.push(rpn);
+				}
+			}
+			else if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
 				memory[pos++] = CPU::INS_BEQ;
-				memory[pos++] = StrToSignedByte(arg1.substr(1));
+				memory[pos++] = A - pos;
 			}
 			else ErrorHandler("invalid argument: " + arg);
 		}
@@ -238,12 +279,111 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			Word A;
 			int p, len;
 			std::string arg = arg1;
-			if ((p = arg.find('*')) != -1 && (arg.find('+') != -1 || arg.find('-') != -1))
+			if (arg.find('.') != -1)
 			{
+				auto it = pointNames.find(arg);
+				if (it != pointNames.end())
+				{
+					A = it->second;
+					memory[pos++] = CPU::INS_BNE;
+					memory[pos++] = A - pos;
+				}
+				else
+				{
+					RequirePointName rpn;
+					rpn.name = arg;
+					memory[pos++] = CPU::INS_BNE;
+					rpn.posReq = pos;
+					rpn.is_branch = true;
+					pos++;
+					pountReq.push(rpn);
+				}
+			}
+			else if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
 				memory[pos++] = CPU::INS_BNE;
-				memory[pos++] = StrToSignedByte(arg1.substr(1));
+				memory[pos++] = A - pos;
 			}
 			else ErrorHandler("invalid argument: " + arg);
+		}
+		else if (ins == "bcs")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			if (arg.find('.') != -1)
+			{
+				auto it = pointNames.find(arg);
+				if (it != pointNames.end())
+				{
+					A = it->second;
+					memory[pos++] = CPU::INS_BCS;
+					memory[pos++] = A - pos;
+				}
+				else
+				{
+					RequirePointName rpn;
+					rpn.name = arg;
+					memory[pos++] = CPU::INS_BCS;
+					rpn.posReq = pos;
+					rpn.is_branch = true;
+					pos++;
+					pountReq.push(rpn);
+				}
+			}
+			else if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				memory[pos++] = CPU::INS_BCS;
+				memory[pos++] = A - pos;
+			}
+			else ErrorHandler("invalid argument: " + arg);
+		}
+		else if (ins == "bcc")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			if (arg.find('.') != -1)
+			{
+				auto it = pointNames.find(arg);
+				if (it != pointNames.end())
+				{
+					A = it->second;
+					memory[pos++] = CPU::INS_BCC;
+					memory[pos++] = A - pos;
+				}
+				else
+				{
+					RequirePointName rpn;
+					rpn.name = arg;
+					memory[pos++] = CPU::INS_BCC;
+					rpn.posReq = pos;
+					rpn.is_branch = true;
+					pos++;
+					pountReq.push(rpn);
+				}
+			}
+			else if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				memory[pos++] = CPU::INS_BCC;
+				memory[pos++] = A - pos;
+			}
+			else ErrorHandler("invalid argument: " + arg);
+		}
+		else if (ins == "clc")
+		{
+			memory[pos++] = CPU::INS_CLC;
+		}
+		else if (ins == "sec")
+		{
+			memory[pos++] = CPU::INS_SEC;
+		}
+		else if (ins == "clv")
+		{
+			memory[pos++] = CPU::INS_CLV;
 		}
 		else if (ins == "jmp")
 		{
@@ -553,6 +693,32 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 			}
 		}
+		else if (ins == "adc")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_ADC_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_ADC_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+			}
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);
@@ -868,6 +1034,57 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 			}
 			}
+		else if (ins == "adc")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('(')) == -1)
+			{
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_ADC_ZPX;
+						memory[pos++] = A;
+					}
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_ADC_ABSX;
+						memory[pos++] = (A & 0xFF00) >> 8;
+						memory[pos++] = (A & 0x00FF);
+					}
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+			}
+			else // indirect
+			{
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 1));
+				if (arg2 == "X")
+				{
+					memory[pos++] = CPU::INS_ADC_INDX;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else if (arg2 == "Y")
+				{
+					memory[pos++] = CPU::INS_ADC_INDY;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+			}
+		}
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);

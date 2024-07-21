@@ -10,7 +10,7 @@ const Word START_PROGRAM = 0x0000;
 
 struct Memory
 {
-	static constexpr u32 MAX_MEM = 0x1000;
+	static constexpr u32 MAX_MEM = 0x0400;
 	Byte Data[MAX_MEM];
 	void Init();
 

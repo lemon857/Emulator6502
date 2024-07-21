@@ -5,12 +5,6 @@
 
 #include "memory.h"
 
-struct RequirePointName
-{
-	std::string name;
-	Word posReq;
-};
-
 struct Assembler
 {
 	Assembler() {}

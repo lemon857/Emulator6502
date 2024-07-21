@@ -48,6 +48,154 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			LoadRegisterSetStatus(Y);
 		}	break;
 
+		case INS_ADC_IM: {
+			Byte op = FetchByte(cycles, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_ZP: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte op = ReadByte(cycles, ZPaddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_ZPX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Byte op = ReadByte(cycles, ZPaddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break; 
+		case INS_ADC_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += Y;
+			cycles--;
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_INDX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			Byte opAddr = ReadByte(cycles, addr, memory);
+			Byte op = ReadByte(cycles, opAddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_ADC_INDY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += Y;
+			cycles--;
+			Byte opAddr = ReadByte(cycles, addr, memory);
+			Byte op = ReadByte(cycles, opAddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum += op;
+			sum += C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+
 		case INS_DEC_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
 			memory[zeroPageAddr]--;
@@ -328,10 +476,27 @@ void CPU::Execute(u32 cycles, Memory& memory)
 				cycles--;
 			}
 		}	break;
-
 		case INS_BNE: {
 			Byte offset = FetchByte(cycles, memory);
 			if (Z == 0)
+			{
+				signed char of = offset;
+				PC += of;
+				cycles--;
+			}
+		}	break;
+		case INS_BCC: {
+			Byte offset = FetchByte(cycles, memory);
+			if (C == 0)
+			{
+				signed char of = offset;
+				PC += of;
+				cycles--;
+			}
+		}	break;
+		case INS_BCS: {
+			Byte offset = FetchByte(cycles, memory);
+			if (C == 1)
 			{
 				signed char of = offset;
 				PC += of;

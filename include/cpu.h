@@ -16,7 +16,14 @@ struct CPU
 		INS_DEY = 0x88,			// decrement Y
 		INS_INY = 0xC8,			// increment Y
 
-		INS_ADC_IM = 0x69,		// add 
+		INS_ADC_IM = 0x69,		// add with carry A and value
+		INS_ADC_ZP = 0x65,		// add with carry A and (from ZeroPage (8-bit) address)
+		INS_ADC_ZPX = 0x75,		// add with carry A	and (from ZeroPage (8-bit) address + value X )
+		INS_ADC_ABS = 0x6D,		// add with carry A	and (from absolute address)
+		INS_ADC_ABSX = 0x7D,	// add with carry A	and (from absolute address + value X)
+		INS_ADC_ABSY = 0x79,	// add with carry A	and (from absolute address + value Y)
+		INS_ADC_INDX = 0x61,	// add with carry A	and from address -> (from absolute address + value X)
+		INS_ADC_INDY = 0x71,	// add with carry A	and from address -> (from absolute address + value Y)
 
 		INS_AND_IM = 0x29,		// logical A and value
 		INS_AND_ZP = 0x25,		// logical A and from (ZeroPage (8-bit) address)
@@ -72,6 +79,12 @@ struct CPU
 
 		INS_BEQ = 0xF0,			// branch if Zero flag true
 		INS_BNE = 0xD0,			// branch if Zero flag false
+		INS_BCS = 0xB0,			// branch if Carry flag true
+		INS_BCC = 0x90,			// branch if Carry flag false
+
+		INS_CLC = 0x18,			// clear Carry flag
+		INS_SEC = 0x38,			// set Carry flag
+		INS_CLV = 0xB8,			// clear Overflow flag
 
 		INS_TXS = 0x9A,			// transfer X to stack pointer
 		INS_TSX = 0xBA,			// transfer stack pointer to X
