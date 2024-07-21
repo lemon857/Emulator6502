@@ -149,7 +149,6 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					ErrorHandler("error too much address at: " + std::to_string(pos));
 				}
-
 			}
 		}
 		else if (ins == "ldx")
@@ -396,55 +395,55 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 		}
 		else if (ins == "stx")
 		{
-		Word A;
-		int p, len;
-		std::string arg = arg1;
-		len = arg.length();
-		if ((p = arg.find('$')) != -1)
-		{
-			A = StrToWord(arg.substr(p + 1));
-			if (len == 3)					// ZeroPointer
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
 			{
-				memory[pos++] = CPU::INS_STX_ZP;
-				memory[pos++] = A;
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_STX_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_STX_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
 			}
-			else if (len > 3 && len <= 5)	// absolute address
-			{
-				memory[pos++] = CPU::INS_STX_ABS;
-				memory[pos++] = (A & 0xFF00) >> 8;
-				memory[pos++] = (A & 0x00FF);
-			}
-			else
-			{
-				ErrorHandler("error too much address at: " + std::to_string(pos));
-			}
-		}
 		}
 		else if (ins == "sty")
 		{
-		Word A;
-		int p, len;
-		std::string arg = arg1;
-		len = arg.length();
-		if ((p = arg.find('$')) != -1)
-		{
-			A = StrToWord(arg.substr(p + 1));
-			if (len == 3)					// ZeroPointer
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
 			{
-				memory[pos++] = CPU::INS_STY_ZP;
-				memory[pos++] = A;
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_STY_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_STY_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
 			}
-			else if (len > 3 && len <= 5)	// absolute address
-			{
-				memory[pos++] = CPU::INS_STY_ABS;
-				memory[pos++] = (A & 0xFF00) >> 8;
-				memory[pos++] = (A & 0x00FF);
-			}
-			else
-			{
-				ErrorHandler("error too much address at: " + std::to_string(pos));
-			}
-		}
 		}
 		else if (ins == "tax")
 		{
@@ -501,6 +500,58 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 		else if (ins == "pla")
 		{
 			memory[pos++] = CPU::INS_PLA;
+		}
+		else if (ins == "dec")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_DEC_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_DEC_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+		}
+		else if (ins == "inc")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					memory[pos++] = CPU::INS_INC_ZP;
+					memory[pos++] = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory[pos++] = CPU::INS_INC_ABS;
+					memory[pos++] = (A & 0xFF00) >> 8;
+					memory[pos++] = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
 		}
 		else
 		{
@@ -753,10 +804,74 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 			}
 		}
+		else if (ins == "dec")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_DEC_ZPX;
+						memory[pos++] = A;
+					}
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_DEC_ABSX;
+						memory[pos++] = (A & 0xFF00) >> 8;
+						memory[pos++] = (A & 0x00FF);
+					}
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+		}
+		else if (ins == "inc")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (len == 3)					// ZeroPointer
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_INC_ZPX;
+						memory[pos++] = A;
+					}
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					if (arg2 == "X")
+					{
+						memory[pos++] = CPU::INS_INC_ABSX;
+						memory[pos++] = (A & 0xFF00) >> 8;
+						memory[pos++] = (A & 0x00FF);
+					}
+				}
+				else
+				{
+					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+			}
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);
-		}
+		}			
 	}
 }
 

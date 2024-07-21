@@ -6,7 +6,7 @@ Source information I get here: http://www.6502.org/tutorials/6502opcodes.html#RT
 custom_asm6502.xml is a style for notepad++
 
 Now I have compiller custom asm6502 with so small count instructions:
-lda ldx ldy sta stx sty rts jmp jsr and tax txa tay tya dex dey inx iny bne beq txs tsx pha pla
+lda ldx ldy sta stx sty rts jmp jsr and tax txa tay tya dex dey inx iny bne beq txs tsx pha pla dec inc
 
 Also have some prefixes for comfort compile and know what it do:
 

@@ -60,6 +60,16 @@ struct CPU
 		INS_LDY_ABS = 0xAC,		// set value Y from (absolute address)
 		INS_LDY_ABSX = 0xBC,	// set value Y from (absolute address + value X)
 
+		INS_DEC_ZP = 0xC6,		// decrement value from (ZeroPage (8-bit) address)
+		INS_DEC_ZPX = 0xD6,		// decrement value from (ZeroPage (8-bit) address + value X)
+		INS_DEC_ABS = 0xCE,		// decrement value from (absolute address)
+		INS_DEC_ABSX = 0xDE,	// decrement value from (absolute address + value X)
+
+		INS_INC_ZP = 0xE6,		// increment value from (ZeroPage (8-bit) address)
+		INS_INC_ZPX = 0xF6,		// increment value from (ZeroPage (8-bit) address + value X)
+		INS_INC_ABS = 0xEE,		// increment value from (absolute address)
+		INS_INC_ABSX = 0xFE,	// increment value from (absolute address + value X)
+
 		INS_BEQ = 0xF0,			// branch if Zero flag true
 		INS_BNE = 0xD0,			// branch if Zero flag false
 
@@ -67,7 +77,6 @@ struct CPU
 		INS_TSX = 0xBA,			// transfer stack pointer to X
 		INS_PHA = 0x48,			// push accumulator
 		INS_PLA = 0x68,			// pull accumulator from stack
-
 
 		INS_JMP = 0x4C,			// jump to address
 		INS_JMP_IND = 0x6C,		// jump to address
@@ -80,13 +89,13 @@ struct CPU
 
 	Byte A, X, Y;	// registers
 
-	Byte C : 1;		// status flags		
-	Byte Z : 1;		// status flags
-	Byte I : 1;		// status flags
-	Byte D : 1;		// status flags
-	Byte B : 1;		// status flags
-	Byte V : 1;		// status flags
-	Byte N : 1;		// status flags
+	Byte C : 1;		// carry flag		
+	Byte Z : 1;		// zero flag
+	Byte I : 1;		// interrupt flag
+	Byte D : 1;		// decimal flag
+	Byte B : 1;		// unused
+	Byte V : 1;		// overflow flag
+	Byte N : 1;		// negative flag
 
 	void Reset(Memory& memory);
 
