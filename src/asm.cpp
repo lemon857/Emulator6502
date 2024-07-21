@@ -25,16 +25,38 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 	{
 		int p = 0;
 		// delete comment
-		if ((p = line.find(';')) != -1) line = line.substr(0, p-1);
+		if ((p = line.find(';')) != -1) line = line.substr(0, (p-1) < 0 ? 0 : (p-1));
 		// clear end spaces
 		while (!line.empty() && line[line.length() - 1] == ' ') line = line.substr(0, line.length() - 2);
 		if (line.empty()) continue;
-		// save point ptr
+		// save pos next command after pointer 
 		if (line[0] == '.') 
 		{
-			pointNames.emplace(line, prgpos++);
+			pointNames.emplace(line, ++prgpos);
 			continue;
 		}	
+		// for comfort write code set pos with ':' ex. :$4444 next code start from this address
+		// if have args hexadecemal, stand for set value BYTE in memory ex. :$4444 $44
+		else if (line[0] == ':')
+		{
+			int posSp = line.find(' ');
+			if (line.find('$') == -1)
+			{
+				ErrorHandler("invalid value memory pointer");
+				continue;
+			}
+			if (posSp != -1)
+			{
+				Word addr = StrToWord(line.substr(line.find('$') + 1, posSp - line.find('$') - 1));
+				Byte val = StrToWord(line.substr(posSp+2));
+				memory[addr] = val;
+			}
+			else
+			{
+				prgpos = StrToWord(line.substr(line.find('$'), posSp));
+			}
+			continue;
+		}
 		int posSpace = line.find(' ');
 		std::string ins = line.substr(0, posSpace);
 		int posPoint = line.find(',');
@@ -230,19 +252,19 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			int p, len;
 			std::string arg = arg1;
 			len = arg.length();
-			if ((p = arg.find('$')) != -1)
+			if ((p = arg.find(')')) != -1)
+			{
+				A = StrToWord(arg.substr(arg.find('$') + 1, p - arg.find('$') - 1));
+				memory[pos++] = CPU::INS_JMP_IND;
+				memory[pos++] = (A & 0xFF00) >> 8;
+				memory[pos++] = (A & 0x00FF);
+			}
+			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				if (len > 3 && len <= 5)	// absolute address
-				{
-					memory[pos++] = CPU::INS_JMP;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
-				}
-				else
-				{
-					ErrorHandler("error too much address at: " + std::to_string(pos));
-				}
+				memory[pos++] = CPU::INS_JMP;
+				memory[pos++] = (A & 0xFF00) >> 8;
+				memory[pos++] = (A & 0x00FF);
 			}
 			else if (arg[0] == '.')
 			{
