@@ -60,8 +60,14 @@ struct CPU
 		INS_LDY_ABS = 0xAC,		// set value Y from (absolute address)
 		INS_LDY_ABSX = 0xBC,	// set value Y from (absolute address + value X)
 
-		INS_BEQ = 0xF0,			// jump to subroutine 
-		INS_BNE = 0xD0,			// jump to subroutine 
+		INS_BEQ = 0xF0,			// branch if Zero flag true
+		INS_BNE = 0xD0,			// branch if Zero flag false
+
+		INS_TXS = 0x9A,			// transfer X to stack pointer
+		INS_TSX = 0xBA,			// transfer stack pointer to X
+		INS_PHA = 0x48,			// push accumulator
+		INS_PLA = 0x68,			// pull accumulator from stack
+
 
 		INS_JMP = 0x4C,			// jump to address
 		INS_JMP_IND = 0x6C,		// jump to address
@@ -93,6 +99,9 @@ struct CPU
 	Byte ReadByte(u32& cycles, Word addr, Memory& memory);
 
 	Word ReadWord(u32& cycles, Word addr, Memory& memory);
+
+	void PushByteOntoStack(Byte value, u32& cycles, Memory& memory);
+	void PullByteFromStack(Byte& value, u32& cycles, Memory& memory);
 
 	inline void LoadRegisterSetStatus(Byte value);
 

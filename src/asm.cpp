@@ -486,6 +486,22 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			memory[pos] = CPU::INS_INY;
 			pos++;
 		}
+		else if (ins == "txs")
+		{
+			memory[pos++] = CPU::INS_TXS;
+		}
+		else if (ins == "tsx")
+		{
+			memory[pos++] = CPU::INS_TSX;
+		}
+		else if (ins == "pha")
+		{
+			memory[pos++] = CPU::INS_PHA;
+		}
+		else if (ins == "pla")
+		{
+			memory[pos++] = CPU::INS_PLA;
+		}
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);

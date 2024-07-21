@@ -274,6 +274,23 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			}
 		}	break;
 
+		case INS_TSX: {
+			X = SP;
+			LoadRegisterSetStatus(X);
+			cycles--;
+		} break;
+		case INS_TXS: {
+			SP = X;
+			cycles--;
+		} break;
+		case INS_PHA: {
+			PushByteOntoStack(A, cycles, memory);
+			cycles--;
+		} break;
+		case INS_PLA: {
+			PullByteFromStack(A, cycles, memory);
+			cycles--;
+		} break;
 		case INS_JMP: {
 			Word subAddr = FetchWord(cycles, memory);
 			PC = subAddr;
@@ -353,6 +370,20 @@ Word CPU::ReadWord(u32& cycles, Word addr, Memory& memory)
 	data |= memory[addr];
 	cycles -= 2;
 	return data;
+}
+
+void CPU::PushByteOntoStack(Byte value, u32& cycles, Memory& memory)
+{
+	memory[SP] = value;
+	SP++;
+	cycles--;
+}
+
+void CPU::PullByteFromStack(Byte& value, u32& cycles, Memory& memory)
+{
+	SP--;
+	value = memory[SP];
+	cycles--;
 }
 
 inline void CPU::LoadRegisterSetStatus(Byte value)
