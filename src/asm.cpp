@@ -13,8 +13,8 @@ struct RequirePointName
 	bool is_branch = false;
 };
 
-static std::map<std::string, Word> pointNames;	// if line start '.' it's point name
-static std::queue<RequirePointName> pountReq;	// if args start '.' it's point name
+static std::map<std::string, Word> pointPseudonyms;	// if line start '.' it's pseudonym
+static std::queue<RequirePointName> pseudonymsReq;		// if args start '.' it's pseudonym
 
 void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 {
@@ -34,12 +34,12 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 		// delete comment
 		if ((p = line.find(';')) != -1) line = line.substr(0, (p-1) < 0 ? 0 : (p-1));
 		// clear end spaces
-		while (!line.empty() && line[line.length() - 1] == ' ') line = line.substr(0, line.length() - 1);
+		while (!line.empty() && (line[line.length() - 1] == ' ' || line[line.length() - 1] == '\t')) line = line.substr(0, line.length() - 1);
 		if (line.empty()) continue;
 		// save pos next command after pointer 
 		if (line[0] == '.') 
 		{
-			pointNames.emplace(line, ++prgpos);
+			pointPseudonyms.emplace(line, ++prgpos);
 			continue;
 		}	
 		// for comfort write code set pos with ':' ex. :$4444 next code start from this address
@@ -86,12 +86,12 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 		}
 	}
 	
-	while (!pountReq.empty())
+	while (!pseudonymsReq.empty())
 	{
-		RequirePointName ptr = pountReq.front();
+		RequirePointName ptr = pseudonymsReq.front();
 
-		auto it = pointNames.find(ptr.name);
-		if (it != pointNames.end())
+		auto it = pointPseudonyms.find(ptr.name);
+		if (it != pointPseudonyms.end())
 		{
 			if (ptr.is_branch)
 			{
@@ -107,14 +107,14 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 		}
 		else
 			ErrorHandler("Undefined name: " + ptr.name);
-		pountReq.pop();
+		pseudonymsReq.pop();
 	}
 	std::cout << "Successful compile!\n";
 }
 /*else if (arg[0] == '.')
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_LDA_ABS;
@@ -128,7 +128,7 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 					memory[pos++] = CPU::INS_LDA_ABS;
 					rpn.posReq = pos;
 					pos += 2;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}*/
 
@@ -152,7 +152,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
-					ErrorHandler("error too much simple value at: " + std::to_string(pos));
+					ErrorHandler("error too much simple value arg: " + arg);
 				}
 				else if (len == 3)				// ZeroPointer
 				{
@@ -167,7 +167,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else
 				{
-					ErrorHandler("error too much address at: " + std::to_string(pos));
+					ErrorHandler("error too much address arg: " + arg);
 				}
 			}
 		}
@@ -248,8 +248,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			std::string arg = arg1;
 			if (arg.find('.') != -1)
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_BEQ;
@@ -263,7 +263,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 			else if ((p = arg.find('$')) != -1)
@@ -281,8 +281,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			std::string arg = arg1;
 			if (arg.find('.') != -1)
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_BNE;
@@ -296,7 +296,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 			else if ((p = arg.find('$')) != -1)
@@ -314,8 +314,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			std::string arg = arg1;
 			if (arg.find('.') != -1)
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_BCS;
@@ -329,7 +329,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 			else if ((p = arg.find('$')) != -1)
@@ -347,8 +347,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			std::string arg = arg1;
 			if (arg.find('.') != -1)
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_BCC;
@@ -362,7 +362,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 			else if ((p = arg.find('$')) != -1)
@@ -407,8 +407,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			}
 			else if (arg[0] == '.')
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_JMP;
@@ -422,7 +422,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					memory[pos++] = CPU::INS_JMP;
 					rpn.posReq = pos;
 					pos += 2;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 		}
@@ -448,8 +448,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			}
 			else if (arg[0] == '.')
 			{
-				auto it = pointNames.find(arg);
-				if (it != pointNames.end())
+				auto it = pointPseudonyms.find(arg);
+				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
 					memory[pos++] = CPU::INS_JSR;
@@ -463,7 +463,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					memory[pos++] = CPU::INS_JSR;
 					rpn.posReq = pos;
 					pos += 2;
-					pountReq.push(rpn);
+					pseudonymsReq.push(rpn);
 				}
 			}
 		}
@@ -768,18 +768,16 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			}
 			else // indirect
 			{
-				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 1));
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
 					memory[pos++] = CPU::INS_LDA_INDX;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory[pos++] = A;
 				}
 				else if (arg2 == "Y")
 				{
 					memory[pos++] = CPU::INS_LDA_INDY;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory[pos++] = A;
 				}
 			}
 		}
@@ -891,37 +889,53 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			int p, len;
 			std::string arg = arg1;
 			len = arg.length();
-			if ((p = arg.find('$')) != -1)
+			if ((p = arg.find('(')) == -1)
 			{
-				A = StrToWord(arg.substr(p + 1));
-				if (len == 3)					// ZeroPointer
+				if ((p = arg.find('$')) != -1)
 				{
-					if (arg2 == "X")
+					A = StrToWord(arg.substr(p + 1));
+					if (len == 3)					// ZeroPointer
 					{
-						memory[pos++] = CPU::INS_STA_ZPX;
-						memory[pos++] = A;
+						if (arg2 == "X")
+						{
+							memory[pos++] = CPU::INS_STA_ZPX;
+							memory[pos++] = A;
+						}
+					}
+					else if (len > 3 && len <= 5)	// absolute address
+					{
+						if (arg2 == "X")
+						{
+							memory[pos++] = CPU::INS_STA_ABSX;
+							memory[pos++] = (A & 0xFF00) >> 8;
+							memory[pos++] = (A & 0x00FF);
+						}
+						else if (arg2 == "Y")
+						{
+							memory[pos++] = CPU::INS_STA_ABSY;
+							memory[pos++] = (A & 0xFF00) >> 8;
+							memory[pos++] = (A & 0x00FF);
+						}
+					}
+					else
+					{
+						ErrorHandler("error too much address at: " + std::to_string(pos));
 					}
 				}
-				else if (len > 3 && len <= 5)	// absolute address
+			}
+			else // indirect
+			{
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
+				if (arg2 == "X")
 				{
-					if (arg2 == "X")
-					{
-						memory[pos++] = CPU::INS_STA_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
-					}
-					else if (arg2 == "Y")
-					{
-						memory[pos++] = CPU::INS_STA_ABSY;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
-					}
+					memory[pos++] = CPU::INS_STA_INDX;
+					memory[pos++] = A;
 				}
-				else
+				else if (arg2 == "Y")
 				{
-					ErrorHandler("error too much address at: " + std::to_string(pos));
+					memory[pos++] = CPU::INS_STA_INDY;
+					memory[pos++] = A;
 				}
-
 			}
 		}
 		else if (ins == "stx")
@@ -1070,18 +1084,16 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			}
 			else // indirect
 			{
-				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 1));
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
 					memory[pos++] = CPU::INS_ADC_INDX;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory[pos++] = A;
 				}
 				else if (arg2 == "Y")
 				{
 					memory[pos++] = CPU::INS_ADC_INDY;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory[pos++] = A;
 				}
 			}
 		}

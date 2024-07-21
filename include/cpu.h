@@ -3,6 +3,8 @@
 
 #include "memory.h"
 
+const Word STACK_POINTER = 0x01FF; // stack 0x0100 - 0x01FF
+
 struct CPU
 {
 	// opcodes
@@ -37,6 +39,8 @@ struct CPU
 		INS_STA_ABS = 0x8D,		// store value from A to (absolute address)
 		INS_STA_ABSX = 0x9D,	// store value from A to (absolute address + value X)
 		INS_STA_ABSY = 0x99,	// store value from A to (absolute address + value Y)
+		INS_STA_INDX = 0x81,	// store value from A to address from -> (absolute address + value X)
+		INS_STA_INDY = 0x91,	// store value from A to address from -> (absolute address + value Y)
 
 		INS_STX_ZP = 0x86,		// store value from X to (ZeroPage (8-bit) address)
 		INS_STX_ZPY = 0x96,		// store value from X to (ZeroPage (8-bit) address + value Y)
@@ -109,6 +113,11 @@ struct CPU
 	Byte B : 1;		// unused
 	Byte V : 1;		// overflow flag
 	Byte N : 1;		// negative flag
+
+	Word SPToAddress() const // because stack works top down
+	{
+		return 0x100 | SP;
+	}
 
 	void Reset(Memory& memory);
 

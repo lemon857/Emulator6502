@@ -5,8 +5,9 @@ using Byte = unsigned char;
 using Word = unsigned short;
 using u32 = unsigned int;
 
-const Word STACK_POINTER = 0x0100; // stack 0x0100 - 0x01FF
-const Word START_PROGRAM = 0x0000;
+// 0x0100 - 0x01FF - is a stack
+// 0x0200 - 0x02FF - I use as data storage
+const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memory
 
 struct Memory
 {

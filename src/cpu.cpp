@@ -400,6 +400,22 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			cycles--;
 			memory[addr] = A;
 		} break;
+		case INS_STA_INDX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			memory[addr] = A;
+			cycles--;
+		} break;
+		case INS_STA_INDY: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += Y;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			memory[addr] = A;
+			cycles--;
+		} break;
 
 		case INS_STX_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
@@ -532,15 +548,15 @@ void CPU::Execute(u32 cycles, Memory& memory)
 		} break;
 		case INS_JSR: {
 			Word subAddr = FetchWord(cycles, memory);
-			memory.WriteWord(PC - 1, SP, cycles);
-			SP += 2;
+			memory.WriteWord(PC - 1, SPToAddress(), cycles);
+			SP -= 2;
 			cycles--;
 			PC = subAddr;
 		} break;
 		case INS_RTS: {
-			SP -= 2;
+			SP += 2;
 			cycles -= 2;
-			PC = memory.ReadWord(SP, cycles);
+			PC = ReadWord(cycles, SPToAddress(), memory);
 			PC++;
 			cycles--;
 		} break;
@@ -595,24 +611,20 @@ Byte CPU::ReadByte(u32& cycles, Word addr, Memory& memory)
 
 Word CPU::ReadWord(u32& cycles, Word addr, Memory& memory)
 {
-	// 6502 is little endian
-	Word data = (memory[addr] << 8);
-	data |= memory[addr];
-	cycles -= 2;
-	return data;
+	return memory.ReadWord(addr, cycles);
 }
 
 void CPU::PushByteOntoStack(Byte value, u32& cycles, Memory& memory)
 {
-	memory[SP] = value;
-	SP++;
+	memory[SPToAddress()] = value;
+	SP--;
 	cycles--;
 }
 
 void CPU::PullByteFromStack(Byte& value, u32& cycles, Memory& memory)
 {
-	SP--;
-	value = memory[SP];
+	SP++;
+	value = memory[SPToAddress()];
 	cycles--;
 }
 
