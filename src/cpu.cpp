@@ -195,6 +195,153 @@ void CPU::Execute(u32 cycles, Memory& memory)
 				V = ((A & 0b10000000) != (oldA & 0b10000000));
 			}
 		}	break;
+		case INS_SBC_IM: {
+			Byte op = FetchByte(cycles, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_ZP: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte op = ReadByte(cycles, ZPaddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_ZPX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Byte op = ReadByte(cycles, ZPaddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += Y;
+			cycles--;
+			Byte op = ReadByte(cycles, addr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_INDX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			Byte opAddr = ReadByte(cycles, addr, memory);
+			Byte op = ReadByte(cycles, opAddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
+		case INS_SBC_INDY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += Y;
+			cycles--;
+			Byte opAddr = ReadByte(cycles, addr, memory);
+			Byte op = ReadByte(cycles, opAddr, memory);
+			const Byte oldA = A;
+			Word sum = A;
+			sum -= op;
+			sum -= C;
+			A = (sum & 0xFF);
+			C = (sum & 0xFF00) > 0;
+			N = (A & 0b10000000) > 0;
+			Z = (A == 0);
+			V = false;
+			if (((oldA & 0b10000000) ^ (op & 0b10000000)) != 0)
+			{
+				V = ((A & 0b10000000) != (oldA & 0b10000000));
+			}
+		}	break;
 
 		case INS_DEC_ZP: {
 			Byte zeroPageAddr = FetchByte(cycles, memory);
@@ -481,6 +628,128 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			addr += X;
 			cycles--;
 			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_INDX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_AND_INDY: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += Y;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A &= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+
+		case INS_ORA_IM: {
+			Byte value = FetchByte(cycles, memory);
+			A |= value;
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			A |= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_ZPX: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += X;
+			cycles--;
+			A |= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			A |= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A |= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A |= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_INDX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A |= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_ORA_INDY: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += Y;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A |= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		
+		case INS_EOR_IM: {
+			Byte value = FetchByte(cycles, memory);
+			A ^= value;
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_ZP: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			A ^= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_ZPX: {
+			Byte zeroPageAddr = FetchByte(cycles, memory);
+			zeroPageAddr += X;
+			cycles--;
+			A ^= ReadByteFromZeroPage(cycles, zeroPageAddr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			A ^= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_ABSX: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A ^= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_ABSY: {
+			Word addr = FetchWord(cycles, memory);
+			addr += X;
+			cycles--;
+			A ^= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_INDX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += X;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A ^= ReadByte(cycles, addr, memory);
+			LoadRegisterSetStatus(A);
+		} break;
+		case INS_EOR_INDY: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			ZPaddr += Y;
+			cycles--;
+			Word addr = ReadWord(cycles, ZPaddr, memory);
+			A ^= ReadByte(cycles, addr, memory);
 			LoadRegisterSetStatus(A);
 		} break;
 

@@ -27,12 +27,41 @@ struct CPU
 		INS_ADC_INDX = 0x61,	// add with carry A	and from address -> (from absolute address + value X)
 		INS_ADC_INDY = 0x71,	// add with carry A	and from address -> (from absolute address + value Y)
 
+		INS_SBC_IM = 0xE9,		// substract with carry A and value
+		INS_SBC_ZP = 0xE5,		// substract with carry A and (from ZeroPage (8-bit) address)
+		INS_SBC_ZPX = 0xF5,		// substract with carry A and (from ZeroPage (8-bit) address + value X )
+		INS_SBC_ABS = 0xED,		// substract with carry A and (from absolute address)
+		INS_SBC_ABSX = 0xFD,	// substract with carry A and (from absolute address + value X)
+		INS_SBC_ABSY = 0xF9,	// substract with carry A and (from absolute address + value Y)
+		INS_SBC_INDX = 0xE1,	// substract with carry A and from address -> (from absolute address + value X)
+		INS_SBC_INDY = 0xF1,	// substract with carry A and from address -> (from absolute address + value Y)
+
 		INS_AND_IM = 0x29,		// logical A and value
 		INS_AND_ZP = 0x25,		// logical A and from (ZeroPage (8-bit) address)
 		INS_AND_ZPX = 0x35,		// logical A and from (ZeroPage (8-bit) address + value X)
 		INS_AND_ABS = 0x2D,		// logical A and from (absolute address)
 		INS_AND_ABSX = 0x3D,	// logical A and from (absolute address + value X)
 		INS_AND_ABSY = 0x39,	// logical A and from (absolute address + value Y)
+		INS_AND_INDX = 0x21,	// logical A and from from address -> (absolute address + value X)
+		INS_AND_INDY = 0x31,	// logical A and from from address -> (absolute address + value Y)
+
+		INS_ORA_IM = 0x09,		// logical A or value
+		INS_ORA_ZP = 0x05,		// logical A or from (ZeroPage (8-bit) address)
+		INS_ORA_ZPX = 0x15,		// logical A or from (ZeroPage (8-bit) address + value X)
+		INS_ORA_ABS = 0x0D,		// logical A or from (absolute address)
+		INS_ORA_ABSX = 0x1D,	// logical A or from (absolute address + value X)
+		INS_ORA_ABSY = 0x19,	// logical A or from (absolute address + value Y)
+		INS_ORA_INDX = 0x01,	// logical A or from from address -> (absolute address + value X)
+		INS_ORA_INDY = 0x11,	// logical A or from from address -> (absolute address + value Y)
+
+		INS_EOR_IM = 0x49,		// logical A exclusive or value
+		INS_EOR_ZP = 0x45,		// logical A exclusive or from (ZeroPage (8-bit) address)
+		INS_EOR_ZPX = 0x55,		// logical A exclusive or from (ZeroPage (8-bit) address + value X)
+		INS_EOR_ABS = 0x4D,		// logical A exclusive or from (absolute address)
+		INS_EOR_ABSX = 0x5D,	// logical A exclusive or from (absolute address + value X)
+		INS_EOR_ABSY = 0x59,	// logical A exclusive or from (absolute address + value Y)
+		INS_EOR_INDX = 0x41,	// logical A exclusive or from from address -> (absolute address + value X)
+		INS_EOR_INDY = 0x51,	// logical A exclusive or from from address -> (absolute address + value Y)
 
 		INS_STA_ZP = 0x85,		// store value from A to (ZeroPage (8-bit) address)
 		INS_STA_ZPX = 0x95,		// store value from A to (ZeroPage (8-bit) address + value X)

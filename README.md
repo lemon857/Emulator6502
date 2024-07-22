@@ -209,8 +209,8 @@ dec $0E, X  ; decrement value at [$0E + X] = [$0F]
 dec $0322   ; decrement value at [$0322]
 ```
 ```asm
-; zero page, x mode
-:$0322 $02    ; set value at [$0F]equal $02
+; absolute, x mode
+:$0322 $02    ; set value at [$0322] equal $02
 dec $0321, X  ; decrement value at [$0321 + X] = [$0322]
 ```
 
