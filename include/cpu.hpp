@@ -1,5 +1,5 @@
-#ifndef _CPU_H_
-#define _CPU_H_
+#ifndef _CPU_HPP_
+#define _CPU_HPP_
 
 #include "memory.hpp"
 
@@ -166,6 +166,8 @@ struct CPU
 	inline void LoadRegisterSetStatus(Byte value);
 
 	void Execute(u32 cycles, Memory& memory);
+
+	void Step(u32& cycles, Memory& memory);
 };
 
-#endif // !_CPU_H_
+#endif // _CPU_HPP_

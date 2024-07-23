@@ -4,7 +4,13 @@ void CPU::Execute(u32 cycles, Memory& memory)
 {
 	while (cycles > 0)
 	{
-		Byte ins = FetchByte(cycles, memory);
+		Step(cycles, memory);
+	}
+}
+
+void CPU::Step(u32& cycles, Memory& memory)
+{
+	Byte ins = FetchByte(cycles, memory);
 		switch (ins)
 		{
 		case INS_TAX: {
@@ -833,7 +839,6 @@ void CPU::Execute(u32 cycles, Memory& memory)
 			//printf("Instruction not handled%d", ins);
 			break;
 		}
-	}
 }
 
 void CPU::Reset(Memory& memory)

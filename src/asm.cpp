@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <map>
+#include <math.h>
 
 #include "asm.hpp"
 #include "cpu.hpp"
@@ -1382,6 +1383,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);
+
 		}			
 	}
 }

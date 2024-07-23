@@ -1,5 +1,5 @@
-#ifndef _ASM_H_
-#define _ASM_H_
+#ifndef _ASM_HPP_
+#define _ASM_HPP_
 
 #include <string>
 
@@ -19,4 +19,4 @@ struct Assembler
 	static void LoadMemory(std::string path, Memory& memory);
 };
 
-#endif // !_ASM_H_
+#endif // _ASM_HPP_
