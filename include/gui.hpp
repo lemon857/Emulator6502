@@ -9,7 +9,7 @@ class GUI
 public:
     GUI() = delete;
     ~GUI() = delete;
-    static void DrawState(CPU& cpu, Memory& memory, u32 cycles);
+    static void DrawStateCPU(CPU& cpu, Memory& memory, u32 cycles);
     static void LiveExecute(CPU& cpu, Memory& memory, u32 cycles);
 private:
     static void ClearScreen();

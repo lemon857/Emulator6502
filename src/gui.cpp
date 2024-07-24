@@ -5,7 +5,7 @@
 #if defined(_WIN64)
 #include <windows.h>
 #endif
-void GUI::DrawState(CPU& cpu, Memory& memory, u32 cycles)
+void GUI::DrawStateCPU(CPU& cpu, Memory& memory, u32 cycles)
 {
     printf("Elapsed: \t%d\n", cycles);
     printf("CPU reg A: \t%x\t\t[%x]: %x\n", cpu.A, cpu.PC, memory.SaveGetByte(cpu.PC));
@@ -38,7 +38,7 @@ void GUI::LiveExecute(CPU& cpu, Memory& memory, u32 cycles)
             ClearScreen();
         }
         else break;
-        DrawState(cpu, memory, start_cycles - cycles);
+        DrawStateCPU(cpu, memory, start_cycles - cycles);
         printf("Press button to next step (qq for exit)\n");
         cpu.Step(cycles, memory);
     }

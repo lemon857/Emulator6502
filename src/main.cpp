@@ -28,7 +28,8 @@ int main(int argc, char** argv)
 
 #if defined(_WIN64)
 	Assembler::Compile(path + "\\test.asm6502", mem);
-	my_cpu.Execute(0x0100, mem);
+	GUI::LiveExecute(my_cpu, mem, 128);
+	//my_cpu.Execute(0x0100, mem);
 	Assembler::SaveMemory(path + "\\test.mem", mem);
 #elif defined(__linux__)
 	Assembler::Compile(path + "/test.asm6502", mem);
