@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
 	//Assembler::LoadMemory("path", mem); 
 	Assembler::Compile(path + "\\test.asm6502", mem);
-	my_cpu.Execute(128, mem);
+	my_cpu.Execute(0x0100, mem);
 	Assembler::SaveMemory(path + "\\test.mem", mem);
 	//// start program
 	//mem[0xFFFC] = CPU::INS_JMP;
