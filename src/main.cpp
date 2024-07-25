@@ -3,19 +3,40 @@
 #include "memory.hpp"
 #include "gui.hpp"
 
-#include <iostream>
+#include <stdio.h>
 #include <string>
 #include <vector>
 
+#define PRG_VERSION_STR "6502 Processor emulator V-0.0.3"
+
+
+#if defined(_WIN64)
+char pathSym = '\\';
+#elif defined(__linux__)
+char pathSym = '/';
+#endif
+
 std::string get_path(std::string exePath)
 {
-#if defined(_WIN64)
-	int pos = exePath.rfind('\\');
-	return exePath.substr(0, pos);
-#elif defined(__linux__)
-	int pos = exePath.rfind('/');
-	return exePath.substr(0, pos);
-#endif
+	int pos = exePath.rfind(pathSym);
+	return pos == -1 ? "" : exePath.substr(0, pos) + pathSym;
+}
+
+void HelpMessage()
+{
+	printf(PRG_VERSION_STR "\n");
+	printf("-h or --help used for get this message\n");
+	printf("-g or --gui used for live execution program\n");
+	printf("-p or --prg used for set relative path program\n");
+	printf("-m or --mem used for set relative path memory for save or load\n");
+	printf("-e or --exc used for exexute program for memory file\n");
+	exit(0);
+}
+
+void ErrorHandler(std::string message)
+{
+	printf("%s\n", message.c_str());
+	exit(-1);
 }
 
 int main(int argc, char** argv)
@@ -25,47 +46,50 @@ int main(int argc, char** argv)
 	my_cpu.Reset(mem);
 
 	std::string path = get_path(argv[0]);
-	std::string pathToPrg = "test.asm6502"; 
+	std::string pathToPrg = "";
+	std::string pathToMem = "";
 	bool guiExecute = false;
+	bool fromMemoryExecute = false;
 	
+	// flags checking
 	if (argc > 1)
 	{
 		for (int i = 0; i < argc - 1; i++)
 		{
 			std::string arg = argv[i+1];
 			if (arg == "--gui" || arg == "-g") guiExecute = true;
-			else if (arg == "--prg" || arg == "-p") 
+			else if (arg == "--prg" || arg == "-p")
 			{
 				i++;
-				pathToPrg = argv[i+1];
+				if (i >= argc - 1) ErrorHandler("error not found path program file");
+				pathToPrg = argv[i + 1];
 			}
+			else if (arg == "--mem" || arg == "-m")
+			{
+				i++;
+				if (i >= argc - 1) ErrorHandler("error not found path memory file");
+				pathToMem = argv[i + 1];
+			}
+			else if (arg == "--exc" || arg == "-e") fromMemoryExecute = true;
+			else if (arg == "--help" || arg == "-h") HelpMessage();
+			else if (arg == "--version" || arg == "-v")
+			{
+				printf(PRG_VERSION_STR "\n");
+				exit(0);
+			}
+			else ErrorHandler("Invalid argument: " + arg);
 		}
 	}
 
-#if defined(_WIN64)
-	Assembler::Compile(path + "\\" + pathToPrg, mem);
+	printf("Path: %s\n Path prg: %s\n Path mem: %s\n", path.c_str(), pathToPrg.c_str(), pathToMem.c_str());
+	getchar();
+	if (fromMemoryExecute) Assembler::LoadMemory(path + pathToMem, mem);
+	else Assembler::Compile(path + pathToPrg, mem);
+
 	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
 	else my_cpu.Execute(0x0100, mem);
-	Assembler::SaveMemory(path + "\\" + pathToPrg, mem);
-#elif defined(__linux__)
-	Assembler::Compile(path + "/" + pathToPrg, mem);
-	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
-	else my_cpu.Execute(128, mem);
-	Assembler::SaveMemory(path + "/" + pathToPrg, mem);
-#endif
-	//GUI::DrawState(my_cpu);
-	//Assembler::LoadMemory("path", mem); 
-	//// start program
-	//mem[0xFFFC] = CPU::INS_JMP;
-	//mem[0xFFFD] = 0xE0;
-	//mem[0xFFFE] = 0xFF;
-	//// main
-	//mem[0xFFE0] = CPU::INS_LDA_IM;
-	//mem[0xFFE1] = 0x0A;
-	//mem[0xFFE2] = CPU::INS_AND_IM;
-	//mem[0xFFE3] = 0x01;
-	////mem[0xFFE4] = 0xC0;
-	////mem[0xFFE5] = 0xFF;
-	//// end program
+
+	Assembler::SaveMemory(path + pathToMem, mem);
+
 	return 0;
 }

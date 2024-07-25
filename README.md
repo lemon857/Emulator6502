@@ -1,4 +1,4 @@
-# Emulator6502
+# Emulator6502 V-0.0.3
 This is a program for emulate some functions 6502 processor  
 
 Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)  
@@ -8,7 +8,8 @@ Max support memory 64kb
 
 6502 is a little endian processor, this means in word big byte first, little byte end
 
-[custom_asm6502.xml](https://github.com/lemon857/Emulator6502/blob/main/custom_asm6502.xml) is a style for notepad++
+[custom_asm6502.xml](https://github.com/lemon857/Emulator6502/blob/main/custom_asm6502.xml) is a style for notepad++  
+
 # Intoduction
 Now I have compiller for custom assembly for 6502 with so small count instructions:   
 [lda](#ldaldxldy) [ldx](#ldaldxldy) [ldy](#ldaldxldy) [sta](#stastxsty) [stx](#stastxsty) [sty](#stastxsty) [jmp](#jmp) [jsr](#jsrrts) [rts](#jsrrts)
@@ -39,9 +40,15 @@ Also have some prefixes for comfort compile and for know what every item mean:
   
 # Settings
 At start program:  
+- For get help message about flags use -h or --help
+
 - If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
 
-- As default path to program equal "test.asm6502", if you want change it, use flags -p or --prg and after space relative path to asm6502 program  
+- For set path to asm6502 program use flags -p or --prg and after space relative path to asm6502 program  
+
+- For set path to load/save memory file use flags -m or --mem and after space relative path to asm6502 program
+  
+- If you want execute memory from file, use flags -e or --exc 
 
 In [memory.hpp](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h)
 ```c++
