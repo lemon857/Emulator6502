@@ -32,7 +32,7 @@ void GUI::LiveExecute(CPU& cpu, Memory& memory, u32 cycles)
     disasm.Disassembly(memory);
     u32 start_cycles = cycles;
     ClearScreen();
-    printf("Press enter to next step (qq for exit)\n");
+    printf("Press enter key for next step (qq for exit)\n");
     while (cycles > 0)
     {
         if (std::cin.get() == '\n')
@@ -45,7 +45,7 @@ void GUI::LiveExecute(CPU& cpu, Memory& memory, u32 cycles)
         }
         else continue;
         DrawStateCPU(cpu, memory, start_cycles - cycles);
-        printf("Press button to next step (qq for exit)\n");
+        printf("Press enter key for next step (qq for exit)\n");
         cpu.Step(cycles, memory);
     }
     

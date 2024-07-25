@@ -1,5 +1,9 @@
 # Emulator6502
-This is a program for emulate some functions 6502 processor
+This is a program for emulate some functions 6502 processor  
+
+If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
+
+As default path to program equal "test.asm6502", if you want change it, use flags -p or --prg and after space relative path to asm6502 program
 
 Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)
 

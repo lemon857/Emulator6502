@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 std::string get_path(std::string exePath)
 {
@@ -24,27 +25,33 @@ int main(int argc, char** argv)
 	my_cpu.Reset(mem);
 
 	std::string path = get_path(argv[0]);
+	std::string pathToPrg = "test.asm6502"; 
 	bool guiExecute = false;
 	
 	if (argc > 1)
 	{
-		std::string arg = argv[1];
-		if (arg == "--gui" || arg == "-g") 
+		for (int i = 0; i < argc - 1; i++)
 		{
-			guiExecute = true;
+			std::string arg = argv[i+1];
+			if (arg == "--gui" || arg == "-g") guiExecute = true;
+			else if (arg == "--prg" || arg == "-p") 
+			{
+				i++;
+				pathToPrg = argv[i+1];
+			}
 		}
 	}
 
 #if defined(_WIN64)
-	Assembler::Compile(path + "\\test.asm6502", mem);
-	GUI::LiveExecute(my_cpu, mem, 128);
-	//my_cpu.Execute(0x0100, mem);
-	Assembler::SaveMemory(path + "\\test.mem", mem);
+	Assembler::Compile(path + "\\" + pathToPrg, mem);
+	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
+	else my_cpu.Execute(0x0100, mem);
+	Assembler::SaveMemory(path + "\\" + pathToPrg, mem);
 #elif defined(__linux__)
-	Assembler::Compile(path + "/test.asm6502", mem);
+	Assembler::Compile(path + "/" + pathToPrg, mem);
 	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
 	else my_cpu.Execute(128, mem);
-	Assembler::SaveMemory(path + "/test.mem", mem);
+	Assembler::SaveMemory(path + "/" + pathToPrg, mem);
 #endif
 	//GUI::DrawState(my_cpu);
 	//Assembler::LoadMemory("path", mem); 
