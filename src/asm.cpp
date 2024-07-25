@@ -57,7 +57,7 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 			{
 				Word addr = StrToWord(line.substr(line.find('$') + 1, posSp - line.find('$') - 1));
 				Byte val = StrToWord(line.substr(posSp+2));
-				memory[addr] = val;
+				memory.SafeGetByte(addr) = val;
 			}
 			else
 			{
@@ -97,13 +97,13 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 			if (ptr.is_branch)
 			{
 				Word A = it->second;
-				memory[ptr.posReq] = A - ptr.posReq - 1;
+				memory.SafeGetByte(ptr.posReq) = A - ptr.posReq - 1;
 			}			
 			else
 			{
 				Word A = it->second;
-				memory[ptr.posReq] = (A & 0xFF00) >> 8;
-				memory[ptr.posReq + 1] = (A & 0x00FF);
+				memory.SafeGetByte(ptr.posReq) = (A & 0xFF00) >> 8;
+				memory.SafeGetByte(ptr.posReq + 1) = (A & 0x00FF);
 			}
 		}
 		else
@@ -118,15 +118,15 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_LDA_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_LDA_ABS;
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_ABS;
 					rpn.posReq = pos;
 					pos += 2;
 					pseudonymsReq.push(rpn);
@@ -148,8 +148,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_LDA_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -157,14 +157,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_LDA_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_LDA_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -183,8 +183,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_LDX_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDX_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -192,14 +192,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_LDX_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDX_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_LDX_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_LDX_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -218,8 +218,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_LDY_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDY_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -227,14 +227,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_LDY_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDY_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_LDY_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_LDY_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -253,14 +253,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_BEQ;
-					memory[pos++] = A - pos;
+					memory.SafeGetByte(pos++) = CPU::INS_BEQ;
+					memory.SafeGetByte(pos++) = A - pos;
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_BEQ;
+					memory.SafeGetByte(pos++) = CPU::INS_BEQ;
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
@@ -270,8 +270,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory[pos++] = CPU::INS_BEQ;
-				memory[pos++] = A - pos;
+				memory.SafeGetByte(pos++) = CPU::INS_BEQ;
+				memory.SafeGetByte(pos++) = A - pos;
 			}
 			else ErrorHandler("invalid argument: " + arg);
 		}
@@ -286,14 +286,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_BNE;
-					memory[pos++] = A - pos;
+					memory.SafeGetByte(pos++) = CPU::INS_BNE;
+					memory.SafeGetByte(pos++) = A - pos - 1;
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_BNE;
+					memory.SafeGetByte(pos++) = CPU::INS_BNE;
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
@@ -303,8 +303,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory[pos++] = CPU::INS_BNE;
-				memory[pos++] = A - pos;
+				memory.SafeGetByte(pos++) = CPU::INS_BNE;
+				memory.SafeGetByte(pos++) = A - pos - 1;
 			}
 			else ErrorHandler("invalid argument: " + arg);
 		}
@@ -319,14 +319,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_BCS;
-					memory[pos++] = A - pos;
+					memory.SafeGetByte(pos++) = CPU::INS_BCS;
+					memory.SafeGetByte(pos++) = A - pos - 1;
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_BCS;
+					memory.SafeGetByte(pos++) = CPU::INS_BCS;
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
@@ -336,8 +336,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory[pos++] = CPU::INS_BCS;
-				memory[pos++] = A - pos;
+				memory.SafeGetByte(pos++) = CPU::INS_BCS;
+				memory.SafeGetByte(pos++) = A - pos - 1;
 			}
 			else ErrorHandler("invalid argument: " + arg);
 		}
@@ -352,14 +352,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_BCC;
-					memory[pos++] = A - pos;
+					memory.SafeGetByte(pos++) = CPU::INS_BCC;
+					memory.SafeGetByte(pos++) = A - pos - 1;
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_BCC;
+					memory.SafeGetByte(pos++) = CPU::INS_BCC;
 					rpn.posReq = pos;
 					rpn.is_branch = true;
 					pos++;
@@ -369,22 +369,22 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory[pos++] = CPU::INS_BCC;
-				memory[pos++] = A - pos;
+				memory.SafeGetByte(pos++) = CPU::INS_BCC;
+				memory.SafeGetByte(pos++) = A - pos - 1;
 			}
 			else ErrorHandler("invalid argument: " + arg);
 		}
 		else if (ins == "clc")
 		{
-			memory[pos++] = CPU::INS_CLC;
+			memory.SafeGetByte(pos++) = CPU::INS_CLC;
 		}
 		else if (ins == "sec")
 		{
-			memory[pos++] = CPU::INS_SEC;
+			memory.SafeGetByte(pos++) = CPU::INS_SEC;
 		}
 		else if (ins == "clv")
 		{
-			memory[pos++] = CPU::INS_CLV;
+			memory.SafeGetByte(pos++) = CPU::INS_CLV;
 		}
 		else if (ins == "jmp")
 		{
@@ -395,16 +395,16 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			if ((p = arg.find(')')) != -1)
 			{
 				A = StrToWord(arg.substr(arg.find('$') + 1, p - arg.find('$') - 1));
-				memory[pos++] = CPU::INS_JMP_IND;
-				memory[pos++] = (A & 0xFF00) >> 8;
-				memory[pos++] = (A & 0x00FF);
+				memory.SafeGetByte(pos++) = CPU::INS_JMP_IND;
+				memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+				memory.SafeGetByte(pos++) = (A & 0x00FF);
 			}
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory[pos++] = CPU::INS_JMP;
-				memory[pos++] = (A & 0xFF00) >> 8;
-				memory[pos++] = (A & 0x00FF);
+				memory.SafeGetByte(pos++) = CPU::INS_JMP;
+				memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+				memory.SafeGetByte(pos++) = (A & 0x00FF);
 			}
 			else if (arg[0] == '.')
 			{
@@ -412,15 +412,15 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_JMP;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_JMP;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_JMP;
+					memory.SafeGetByte(pos++) = CPU::INS_JMP;
 					rpn.posReq = pos;
 					pos += 2;
 					pseudonymsReq.push(rpn);
@@ -438,9 +438,9 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_JSR;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_JSR;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -453,15 +453,15 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory[pos++] = CPU::INS_JSR;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_JSR;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory[pos++] = CPU::INS_JSR;
+					memory.SafeGetByte(pos++) = CPU::INS_JSR;
 					rpn.posReq = pos;
 					pos += 2;
 					pseudonymsReq.push(rpn);
@@ -470,7 +470,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 		}
 		else if (ins == "rts")
 		{
-			memory[pos] = CPU::INS_RTS;
+			memory.SafeGetByte(pos) = CPU::INS_RTS;
 			pos++;
 		}
 		else if (ins == "and")
@@ -484,8 +484,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_AND_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_AND_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -493,14 +493,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_AND_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_AND_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_AND_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_AND_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -519,8 +519,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_ORA_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ORA_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -528,14 +528,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_ORA_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ORA_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_ORA_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_ORA_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -554,8 +554,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
 				{
-					memory[pos++] = CPU::INS_EOR_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_EOR_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg[0] == '#' && len > 4)
 				{
@@ -563,14 +563,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				}
 				else if (len == 3)				// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_EOR_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_EOR_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_EOR_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_EOR_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -589,14 +589,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len == 3)					// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_STA_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STA_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_STA_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_STA_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -615,14 +615,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len == 3)					// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_STX_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STX_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_STX_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_STX_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -641,14 +641,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len == 3)					// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_STY_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STY_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_STY_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_STY_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -658,59 +658,59 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 		}
 		else if (ins == "tax")
 		{
-			memory[pos] = CPU::INS_TAX;
+			memory.SafeGetByte(pos) = CPU::INS_TAX;
 			pos++;
 		}
 		else if (ins == "txa")
 		{
-			memory[pos] = CPU::INS_TXA;
+			memory.SafeGetByte(pos) = CPU::INS_TXA;
 			pos++;
 		}
 		else if (ins == "tay")
 		{
-			memory[pos] = CPU::INS_TAY;
+			memory.SafeGetByte(pos) = CPU::INS_TAY;
 			pos++;
 		}
 		else if (ins == "tya")
 		{
-			memory[pos] = CPU::INS_TYA;
+			memory.SafeGetByte(pos) = CPU::INS_TYA;
 			pos++;
 		}
 		else if (ins == "dex")
 		{
-			memory[pos] = CPU::INS_DEX;
+			memory.SafeGetByte(pos) = CPU::INS_DEX;
 			pos++;
 		}
 		else if (ins == "inx")
 		{
-			memory[pos] = CPU::INS_INX;
+			memory.SafeGetByte(pos) = CPU::INS_INX;
 			pos++;
 		}
 		else if (ins == "dey")
 		{
-			memory[pos] = CPU::INS_DEY;
+			memory.SafeGetByte(pos) = CPU::INS_DEY;
 			pos++;
 		}
 		else if (ins == "iny")
 		{
-			memory[pos] = CPU::INS_INY;
+			memory.SafeGetByte(pos) = CPU::INS_INY;
 			pos++;
 		}
 		else if (ins == "txs")
 		{
-			memory[pos++] = CPU::INS_TXS;
+			memory.SafeGetByte(pos++) = CPU::INS_TXS;
 		}
 		else if (ins == "tsx")
 		{
-			memory[pos++] = CPU::INS_TSX;
+			memory.SafeGetByte(pos++) = CPU::INS_TSX;
 		}
 		else if (ins == "pha")
 		{
-			memory[pos++] = CPU::INS_PHA;
+			memory.SafeGetByte(pos++) = CPU::INS_PHA;
 		}
 		else if (ins == "pla")
 		{
-			memory[pos++] = CPU::INS_PLA;
+			memory.SafeGetByte(pos++) = CPU::INS_PLA;
 		}
 		else if (ins == "dec")
 		{
@@ -723,14 +723,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len == 3)					// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_DEC_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_DEC_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_DEC_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_DEC_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -749,14 +749,14 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (len == 3)					// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_INC_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_INC_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
-					memory[pos++] = CPU::INS_INC_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_INC_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -775,19 +775,19 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4)	// hexadecemal value
 				{
-					memory[pos++] = CPU::INS_ADC_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ADC_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len == 3)							// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_ADC_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ADC_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)				// absolute address
 				{
-					memory[pos++] = CPU::INS_ADC_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_ADC_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -806,19 +806,19 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 1)); 
 				if (arg[0] == '#' && len > 2 && len <= 4)	// hexadecemal value
 				{
-					memory[pos++] = CPU::INS_SBC_IM;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_SBC_IM;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len == 3)							// ZeroPointer
 				{
-					memory[pos++] = CPU::INS_SBC_ZP;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_SBC_ZP;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (len > 3 && len <= 5)				// absolute address
 				{
-					memory[pos++] = CPU::INS_SBC_ABS;
-					memory[pos++] = (A & 0xFF00) >> 8;
-					memory[pos++] = (A & 0x00FF);
+					memory.SafeGetByte(pos++) = CPU::INS_SBC_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
 				else
 				{
@@ -848,23 +848,23 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_LDA_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_LDA_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_LDA_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_LDA_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 						else if (arg2 == "Y")
 						{
-							memory[pos++] = CPU::INS_LDA_ABSY;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_LDA_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -878,13 +878,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_LDA_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_LDA_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_LDA_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 		}
@@ -901,17 +901,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "Y")
 					{
-						memory[pos++] = CPU::INS_LDX_ZPY;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_LDX_ZPY;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
 					if (arg2 == "Y")
 					{
-						memory[pos++] = CPU::INS_LDX_ABSY;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
+						memory.SafeGetByte(pos++) = CPU::INS_LDX_ABSY;
+						memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+						memory.SafeGetByte(pos++) = (A & 0x00FF);
 					}
 				}
 				else
@@ -933,17 +933,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_LDY_ZPX;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_LDY_ZPX;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_LDY_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
+						memory.SafeGetByte(pos++) = CPU::INS_LDY_ABSX;
+						memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+						memory.SafeGetByte(pos++) = (A & 0x00FF);
 					}
 				}
 				else
@@ -967,23 +967,23 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_AND_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_AND_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_AND_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_AND_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 						else if (arg2 == "Y")
 						{
-							memory[pos++] = CPU::INS_AND_ABSY;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_AND_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -997,13 +997,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_AND_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_AND_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_AND_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_AND_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 		}
@@ -1022,23 +1022,23 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_ORA_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_ORA_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_ORA_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_ORA_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 						else if (arg2 == "Y")
 						{
-							memory[pos++] = CPU::INS_ORA_ABSY;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_ORA_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -1052,13 +1052,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_ORA_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ORA_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_ORA_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ORA_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 			}
@@ -1077,23 +1077,23 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_EOR_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_EOR_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_EOR_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_EOR_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 						else if (arg2 == "Y")
 						{
-							memory[pos++] = CPU::INS_EOR_ABSY;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_EOR_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -1107,13 +1107,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_EOR_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_EOR_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_EOR_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_EOR_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 			}
@@ -1132,23 +1132,23 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_STA_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_STA_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_STA_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_STA_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 						else if (arg2 == "Y")
 						{
-							memory[pos++] = CPU::INS_STA_ABSY;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_STA_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -1162,13 +1162,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_STA_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STA_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_STA_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STA_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 		}
@@ -1185,8 +1185,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			{
 				if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_STX_ZPY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_STX_ZPY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 			else
@@ -1208,8 +1208,8 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_STY_ZPX;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_STY_ZPX;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else
@@ -1231,17 +1231,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_DEC_ZPX;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_DEC_ZPX;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_DEC_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
+						memory.SafeGetByte(pos++) = CPU::INS_DEC_ABSX;
+						memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+						memory.SafeGetByte(pos++) = (A & 0x00FF);
 					}
 				}
 				else
@@ -1263,17 +1263,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_INC_ZPX;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_INC_ZPX;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_INC_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
+						memory.SafeGetByte(pos++) = CPU::INS_INC_ABSX;
+						memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+						memory.SafeGetByte(pos++) = (A & 0x00FF);
 					}
 				}
 				else
@@ -1297,17 +1297,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_ADC_ZPX;
-						memory[pos++] = A;
+						memory.SafeGetByte(pos++) = CPU::INS_ADC_ZPX;
+						memory.SafeGetByte(pos++) = A;
 					}
 				}
 				else if (len > 3 && len <= 5)	// absolute address
 				{
 					if (arg2 == "X")
 					{
-						memory[pos++] = CPU::INS_ADC_ABSX;
-						memory[pos++] = (A & 0xFF00) >> 8;
-						memory[pos++] = (A & 0x00FF);
+						memory.SafeGetByte(pos++) = CPU::INS_ADC_ABSX;
+						memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+						memory.SafeGetByte(pos++) = (A & 0x00FF);
 					}
 				}
 				else
@@ -1321,13 +1321,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_ADC_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ADC_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_ADC_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_ADC_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 		}
@@ -1346,17 +1346,17 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_SBC_ZPX;
-							memory[pos++] = A;
+							memory.SafeGetByte(pos++) = CPU::INS_SBC_ZPX;
+							memory.SafeGetByte(pos++) = A;
 						}
 					}
 					else if (len > 3 && len <= 5)	// absolute address
 					{
 						if (arg2 == "X")
 						{
-							memory[pos++] = CPU::INS_SBC_ABSX;
-							memory[pos++] = (A & 0xFF00) >> 8;
-							memory[pos++] = (A & 0x00FF);
+							memory.SafeGetByte(pos++) = CPU::INS_SBC_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
 						}
 					}
 					else
@@ -1370,13 +1370,13 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
 				if (arg2 == "X")
 				{
-					memory[pos++] = CPU::INS_SBC_INDX;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_SBC_INDX;
+					memory.SafeGetByte(pos++) = A;
 				}
 				else if (arg2 == "Y")
 				{
-					memory[pos++] = CPU::INS_SBC_INDY;
-					memory[pos++] = A;
+					memory.SafeGetByte(pos++) = CPU::INS_SBC_INDY;
+					memory.SafeGetByte(pos++) = A;
 				}
 			}
 			}

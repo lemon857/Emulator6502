@@ -31,16 +31,17 @@ Also have some prefixes for comfort compile and for know what every item mean:
   `#$4444`
 - prefix '(' with end ')' between this signs value as command argument mean use indirect mode
   `($4444)`
-- prefix '.' mark pseudonym, named this pos as address and can used how absolute address in pgragram
+- prefix '.' mark pseudonym, named this pos as address and can used how absolute address in progragram, it isn't a command for cpu, is preprocess sign
 `.test`
 - *prefix ':'* have two functions, it isn't a command for cpu, is preprocess sign:  
-  1. set pos program ex. :$4444 set next commands from this value in memory `:$4444`  
+  1. set pos program ex. :$4444 set next commands starts from this value in memory `:$4444`  
   2. set byte in memory ex. :$4444 $44 set byte from $4444 value $44 `:$4444 $44`
   
 # Settings
-In [memory.h](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h)
+In [memory.hpp](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h)
 ```c++
-// 0x0100 - 0x01FF - is a stack
+// 0x0000 - 0x00FF - Zero Page
+// 0x0100 - 0x01FF - Is a stack page
 // 0x0200 - 0x02FF - I use as data storage
 const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memory
 ```

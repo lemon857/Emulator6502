@@ -24,7 +24,16 @@ int main(int argc, char** argv)
 	my_cpu.Reset(mem);
 
 	std::string path = get_path(argv[0]);
-
+	bool guiExecute = false;
+	
+	if (argc > 1)
+	{
+		std::string arg = argv[1];
+		if (arg == "--gui" || arg == "-g") 
+		{
+			guiExecute = true;
+		}
+	}
 
 #if defined(_WIN64)
 	Assembler::Compile(path + "\\test.asm6502", mem);
@@ -33,8 +42,8 @@ int main(int argc, char** argv)
 	Assembler::SaveMemory(path + "\\test.mem", mem);
 #elif defined(__linux__)
 	Assembler::Compile(path + "/test.asm6502", mem);
-	GUI::LiveExecute(my_cpu, mem, 128);
-	//my_cpu.Execute(128, mem);
+	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
+	else my_cpu.Execute(128, mem);
 	Assembler::SaveMemory(path + "/test.mem", mem);
 #endif
 	//GUI::DrawState(my_cpu);

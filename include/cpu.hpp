@@ -125,7 +125,7 @@ struct CPU
 		INS_PLA = 0x68,			// pull accumulator from stack
 
 		INS_JMP = 0x4C,			// jump to address
-		INS_JMP_IND = 0x6C,		// jump to address
+		INS_JMP_IND = 0x6C,		// jump to address indirect
 		INS_JSR = 0x20,			// jump to subroutine 
 		INS_RTS = 0x60;			// return from subroutine
 

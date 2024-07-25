@@ -19,7 +19,12 @@ void GUI::DrawStateCPU(CPU& cpu, Memory& memory, u32 cycles)
     printf("CPU flag N: \t%d\t|\t[%x]: %s\n", cpu.N, cpu.PC+4, disasm[cpu.PC+4]);
     printf("CPU flag V: \t%d\t|\t[%x]: %s\n", cpu.V, cpu.PC+5, disasm[cpu.PC+5]);
     printf("CPU flag C: \t%d\t|\t[%x]: %s\n", cpu.C, cpu.PC+6, disasm[cpu.PC+6]);
-    printf("=====================================================\n");    
+    printf("=====================================================\n");   
+    while (!memory.resently.empty())
+    {
+        printf("Resently used: [%x]: %x\n", memory.resently.front(), memory.SafeGetByte(memory.resently.front()));
+        memory.PopRes();
+    }   
 }
 void GUI::LiveExecute(CPU& cpu, Memory& memory, u32 cycles)
 {        

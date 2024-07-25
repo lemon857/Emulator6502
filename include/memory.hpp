@@ -16,11 +16,18 @@ struct Memory
 {
 	static constexpr u32 MAX_MEM = 0x0400;
 	std::queue<u32> resently;
+	u32 countResently;
 	Byte Data[MAX_MEM];
 	void Init();
 
 	/* read one byte */
 	//Byte operator[](u32 address);
+
+	void PushRes(u32 addr);
+
+	void PopRes();
+
+	Byte& SafeGetByte(u32 address);
 
 	/* write one byte */
 	Byte& operator[](u32 address);
