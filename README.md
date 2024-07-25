@@ -1,7 +1,7 @@
 # Emulator6502
 This is a program for emulate some functions 6502 processor
 
-Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html#RTS)
+Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)
 
 6502 have three registers, the size of each one byte: A, X, Y  
 Max support memory 64kb

@@ -3,7 +3,7 @@
 
 #include "memory.hpp"
 
-const Word STACK_POINTER = 0x01FF; // stack 0x0100 - 0x01FF
+const Word STACK_POINTER = 0x01FF; // stack 0x0100 - 0x01FF and go from up to down
 
 struct CPU
 {

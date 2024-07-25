@@ -14,6 +14,8 @@ add_executable(${PROJECT_NAME}
 	src/main.cpp
 	src/asm.cpp
 	include/asm.hpp
+	src/disasm.cpp
+	include/disasm.hpp
 	src/cpu.cpp
 	include/cpu.hpp
 	src/memory.cpp

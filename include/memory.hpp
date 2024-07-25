@@ -7,7 +7,8 @@ using Byte = unsigned char;
 using Word = unsigned short;
 using u32 = unsigned int;
 
-// 0x0100 - 0x01FF - is a stack
+// 0x0000 - 0x00FF - Zero Page
+// 0x0100 - 0x01FF - Is a stack page
 // 0x0200 - 0x02FF - I use as data storage
 const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memory
 
@@ -20,8 +21,6 @@ struct Memory
 
 	/* read one byte */
 	//Byte operator[](u32 address);
-
-	Byte SaveGetByte(u32 address);
 
 	/* write one byte */
 	Byte& operator[](u32 address);

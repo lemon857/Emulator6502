@@ -3,6 +3,7 @@
 
 #include "cpu.hpp"
 #include "memory.hpp"
+#include "disasm.hpp"
 
 class GUI
 {
@@ -13,6 +14,7 @@ public:
     static void LiveExecute(CPU& cpu, Memory& memory, u32 cycles);
 private:
     static void ClearScreen();
+    static Disassembler disasm;
 };
 
 #endif // _GUI_HPP_
