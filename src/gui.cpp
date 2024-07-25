@@ -5,7 +5,10 @@
 #if defined(_WIN64)
 #include <windows.h>
 #endif
-void GUI::DrawState(CPU& cpu, Memory& memory, u32 cycles)
+
+static Disassembler disasm;
+
+void GUI::DrawStateCPU(CPU& cpu, Memory& memory, u32 cycles)
 {
     printf("Elapsed: \t%d\t|\tMemory:\n", cycles);
     printf("=====================================================\n");    
@@ -36,7 +39,7 @@ void GUI::LiveExecute(CPU& cpu, Memory& memory, u32 cycles)
             break;
         }
         else continue;
-        DrawState(cpu, memory, start_cycles - cycles);
+        DrawStateCPU(cpu, memory, start_cycles - cycles);
         printf("Press button to next step (qq for exit)\n");
         cpu.Step(cycles, memory);
     }

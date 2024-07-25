@@ -1,6 +1,9 @@
 #include "disasm.hpp"
 #include "cpu.hpp"
 
+#include <vector>
+#include <stdio.h>
+
 // Follow rules, defined in memory.hpp about mark memory
 void Disassembler::Disassembly(Memory& memory)
 {
@@ -33,13 +36,53 @@ void Disassembler::Disassembly(Memory& memory)
         case CPU::INS_INY:
             out_data[ptr] = "iny";
             break;
+        case CPU::INS_LDA_IM:
+            out_data[ptr] = "lda #$" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDA_ZP:
+            out_data[ptr] = "lda $" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDA_ZPX:
+            out_data[ptr] = "lda $" + WordToStr(memory[ptr+1]) + ", X";
+            break;
+        case CPU::INS_LDA_ABS:
+            out_data[ptr] = "lda $" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDA_ABSX:
+            out_data[ptr] = "lda $" + WordToStr(memory[ptr+1]) + ", X";
+            break;
+        case CPU::INS_LDA_ABSY:
+            out_data[ptr] = "lda $" + WordToStr(memory[ptr+1]) + ", Y";
+            break;
+        case CPU::INS_LDA_INDX:
+            out_data[ptr] = "lda ($" + WordToStr(memory[ptr+1]) + "), X";
+            break;
+        case CPU::INS_LDA_INDY:
+            out_data[ptr] = "lda ($" + WordToStr(memory[ptr+1]) + "), Y";
+            break;
+
+        case CPU::INS_LDX_IM:
+            out_data[ptr] = "ldx #$" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDX_ZP:
+            out_data[ptr] = "ldx $" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDX_ZPY:
+            out_data[ptr] = "ldx $" + WordToStr(memory[ptr+1]) + ", Y";
+            break;
+        case CPU::INS_LDX_ABS:
+            out_data[ptr] = "ldx $" + WordToStr(memory[ptr+1]);
+            break;
+        case CPU::INS_LDX_ABSY:
+            out_data[ptr] = "ldx $" + WordToStr(memory[ptr+1]) + ", Y";
+            break;
         
         default:
-            out_data[ptr] = std::to_string(memory[ptr]);
+            out_data[ptr] = WordToStr(memory[ptr]);
             break;
         }
-    }
-    
+        ptr++;
+    }    
 }
 
 void Disassembler::Init()
@@ -48,4 +91,27 @@ void Disassembler::Init()
     {
         out_data[i] = "";
     }
+}
+
+std::string Disassembler::WordToStr(Word value)
+{
+    std::string out = "";
+    std::vector<char> tmp;
+	int i = 0;
+	do
+	{
+		tmp.push_back(NumToHex(value % 16));
+        value /= 16;
+	} while (value != 0);
+    for (int i = tmp.size() - 1; i >= 0; i--)
+    {
+        out += tmp[i];
+    }
+	return out;
+}
+
+char Disassembler::NumToHex(Byte num)
+{
+    if (num < 10) return num + '0';
+    return num + 0x57; 
 }
