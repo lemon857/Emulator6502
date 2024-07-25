@@ -1,11 +1,7 @@
 # Emulator6502
 This is a program for emulate some functions 6502 processor  
 
-If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
-
-As default path to program equal "test.asm6502", if you want change it, use flags -p or --prg and after space relative path to asm6502 program
-
-Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)
+Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)  
 
 6502 have three registers, the size of each one byte: A, X, Y  
 Max support memory 64kb
@@ -42,6 +38,11 @@ Also have some prefixes for comfort compile and for know what every item mean:
   2. set byte in memory ex. :$4444 $44 set byte from $4444 value $44 `:$4444 $44`
   
 # Settings
+At start program:  
+- If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
+
+- As default path to program equal "test.asm6502", if you want change it, use flags -p or --prg and after space relative path to asm6502 program  
+
 In [memory.hpp](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h)
 ```c++
 // 0x0000 - 0x00FF - Zero Page
