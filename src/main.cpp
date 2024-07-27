@@ -27,8 +27,9 @@ void HelpMessage()
 	printf(PRG_VERSION_STR "\n");
 	printf("-h or --help used for get this message\n");
 	printf("-g or --gui used for live execution program\n");
-	printf("-p or --prg used for set relative path program\n");
+	printf("-p or --prog used for set relative path program\n");
 	printf("-m or --mem used for set relative path memory for save or load\n");
+	printf("-c or --cycles used for set count cycles processor (as default set 128)\n");
 	printf("-e or --exc used for exexute program for memory file\n");
 	exit(0);
 }
@@ -48,6 +49,7 @@ int main(int argc, char** argv)
 	std::string path = get_path(argv[0]);
 	std::string pathToPrg = "";
 	std::string pathToMem = "";
+	int countCycles = 128;
 	bool guiExecute = false;
 	bool fromMemoryExecute = false;
 	
@@ -58,7 +60,7 @@ int main(int argc, char** argv)
 		{
 			std::string arg = argv[i+1];
 			if (arg == "--gui" || arg == "-g") guiExecute = true;
-			else if (arg == "--prg" || arg == "-p")
+			else if (arg == "--prog" || arg == "-p")
 			{
 				i++;
 				if (i >= argc - 1) ErrorHandler("error not found path program file");
@@ -69,6 +71,12 @@ int main(int argc, char** argv)
 				i++;
 				if (i >= argc - 1) ErrorHandler("error not found path memory file");
 				pathToMem = argv[i + 1];
+			}
+			else if (arg == "--cycles" || arg == "-c")
+			{
+				i++;
+				if (i >= argc - 1) ErrorHandler("error not found number cycles");
+				countCycles = std::atoi(argv[i + 1]);
 			}
 			else if (arg == "--exc" || arg == "-e") fromMemoryExecute = true;
 			else if (arg == "--help" || arg == "-h") HelpMessage();
@@ -86,8 +94,8 @@ int main(int argc, char** argv)
 	if (fromMemoryExecute) Assembler::LoadMemory(path + pathToMem, mem);
 	else Assembler::Compile(path + pathToPrg, mem);
 
-	if (guiExecute) GUI::LiveExecute(my_cpu, mem, 128);
-	else my_cpu.Execute(0x0100, mem);
+	if (guiExecute) GUI::LiveExecute(my_cpu, mem, countCycles);
+	else my_cpu.Execute(countCycles, mem);
 
 	Assembler::SaveMemory(path + pathToMem, mem);
 

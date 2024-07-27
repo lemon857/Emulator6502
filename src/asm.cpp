@@ -33,7 +33,7 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 	{
 		int p = 0;
 		// delete comment
-		if ((p = line.find(';')) != -1) line = line.substr(0, (p-1) < 0 ? 0 : (p-1));
+		if ((p = line.find(';')) != -1) line = line.substr(0, p < 0 ? 0 : p);
 		// clear end spaces
 		while (!line.empty() && (line[line.length() - 1] == ' ' || line[line.length() - 1] == '\t')) line = line.substr(0, line.length() - 1);
 		if (line.empty()) continue;
@@ -382,7 +382,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			else if ((p = arg.find('$')) != -1)
 			{
 				A = StrToWord(arg.substr(p + 1));
-				memory.SafeGetByte(pos++) = CPU::INS_JMP;
+				memory.SafeGetByte(pos++) = CPU::INS_JMP_ABS;
 				memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
 				memory.SafeGetByte(pos++) = (A & 0x00FF);
 			}
@@ -392,7 +392,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				if (it != pointPseudonyms.end())
 				{
 					A = it->second;
-					memory.SafeGetByte(pos++) = CPU::INS_JMP;
+					memory.SafeGetByte(pos++) = CPU::INS_JMP_ABS;
 					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
 					memory.SafeGetByte(pos++) = (A & 0x00FF);
 				}
@@ -400,7 +400,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				{
 					RequirePointName rpn;
 					rpn.name = arg;
-					memory.SafeGetByte(pos++) = CPU::INS_JMP;
+					memory.SafeGetByte(pos++) = CPU::INS_JMP_ABS;
 					rpn.posReq = pos;
 					pos += 2;
 					pseudonymsReq.push(rpn);

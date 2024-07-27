@@ -14,7 +14,7 @@ const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memo
 
 struct Memory
 {
-	static constexpr u32 MAX_MEM = 0x0400;
+	static constexpr u32 MAX_MEM = 0x0800;
 	std::queue<u32> resently;
 	u32 countResently;
 	Byte Data[MAX_MEM];
@@ -28,15 +28,16 @@ struct Memory
 	void PopRes();
 
 	Byte& SafeGetByte(u32 address);
+	Word& SafeGetWord(u32 address);
 
 	/* write one byte */
 	Byte& operator[](u32 address);
 
 	/* write two bytes*/
-	void WriteWord(Word value, u32 address, u32& cycles);
+	void WriteWord(Word value, u32 address, u32 &cycles);
 
 	/* read two bytes*/
-	Word ReadWord(u32 address, u32& cycles);
+	Word ReadWord(u32 address, u32 &cycles);
 };
 
 #endif // _MEMORY_HPP_

@@ -111,13 +111,13 @@ void CPU::Step(u32& cycles, Memory& memory)
 			LoadRegisterSetStatus(A);
 		}	break;
 		case INS_CMP_ABS: {
-			Word addr = FetchByte(cycles, memory);
+			Word addr = FetchWord(cycles, memory);
 			Byte value = ReadByte(cycles, addr, memory);
 			if (A == value) C = 1;
 			LoadRegisterSetStatus(A);
 		}	break;
 		case INS_CMP_ABSX: {
-			Word addr = FetchByte(cycles, memory);
+			Word addr = FetchWord(cycles, memory);
 			Byte value = ReadByte(cycles, addr, memory);
 			value += X;
 			cycles--;
@@ -125,7 +125,7 @@ void CPU::Step(u32& cycles, Memory& memory)
 			LoadRegisterSetStatus(A);
 		}	break;
 		case INS_CMP_ABSY: {
-			Word addr = FetchByte(cycles, memory);
+			Word addr = FetchWord(cycles, memory);
 			Byte value = ReadByte(cycles, addr, memory);
 			value += Y;
 			cycles--;
@@ -909,7 +909,7 @@ void CPU::Step(u32& cycles, Memory& memory)
 			PullByteFromStack(A, cycles, memory);
 			cycles--;
 		} break;
-		case INS_JMP: {
+		case INS_JMP_ABS: {
 			Word subAddr = FetchWord(cycles, memory);
 			PC = subAddr;
 		} break;

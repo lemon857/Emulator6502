@@ -3,12 +3,78 @@ This is a program for emulate some functions 6502 processor
 
 Source information about instructions you can get [here](http://www.6502.org/tutorials/6502opcodes.html)  
 
+[custom_asm6502.xml](https://github.com/lemon857/Emulator6502/blob/main/custom_asm6502.xml) is a style for notepad++  
+
+# Simple start and test
+For test you must have a program on my custom asm6502 or program as bytecode in memory file  
+Start with compile asm6502 program and GUI livetime executing in console  
+Start on windows  
+` Emulator6502.exe --gui --prog test.asm6502 --mem test.mem `  
+Start in linux  
+` ./Emulator6502 --gui --prog test.asm6502 --mem test.mem `  
+ 
+Program for add two numbers:  
+```asm
+; program for add two numbers at $10 and $20  
+; and write result to $30 
+
+:$05 $03 	; count bytes in numbers
+
+:$10 $DE 	; at $10 store $DE 05 32 = 14 550 322‬
+:$11 $05
+:$12 $32
+
+:$20 $0F 	; at $20 store $0F EA 07 = 1 042 951‬
+:$21 $EA
+:$22 $07
+
+:$40 $ED	; at $20 store $ED EF 39 = 15,593,273‬ - right value
+:$41 $EF
+:$42 $39 
+
+ldx $05 	; init iterator value from $05
+.addproc	; pseudonym
+lda $0F, X 	; $0F = ($10 - $01) for correct use all values
+adc $1F, X 	; add with carry
+sta $2F, X	; store value byte
+dex 		; decrement iterator
+bne .addproc; branch if zero flag clear
+```
+
+  
+# Settings start
+At start program:  
+- For get help message about flags use -h or --help
+
+- If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
+
+- For set path to asm6502 program use flags -p or --prog and after space relative path to asm6502 program  
+
+- For set path to load/save memory file use flags -m or --mem and after space relative path to asm6502 program
+
+- For set count cycles processor use flags -c or --cycles, as default set 128
+  
+- If you want execute memory from file, use flags -e or --exc 
+
+In [memory.hpp](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h) default value  
+```c++
+// 0x0000 - 0x00FF - Zero Page
+// 0x0100 - 0x01FF - Is a stack page
+// 0x0200 - 0x02FF - I use as data storage
+const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memory
+```
+
+# Describe processor 6502 and my program
+
 6502 have three registers, the size of each one byte: A, X, Y  
 Max support memory 64kb
 
 6502 is a little endian processor, this means in word big byte first, little byte end
 
-[custom_asm6502.xml](https://github.com/lemon857/Emulator6502/blob/main/custom_asm6502.xml) is a style for notepad++  
+Program have assembler for compile asm6502 to byte code for my emulator  
+Also have a disassembler for see in realtime how command is run  
+
+Program stored as text file, memory stored as binary file  
 
 # Intoduction
 Now I have compiller for custom assembly for 6502 with so small count instructions:   
@@ -18,8 +84,12 @@ Now I have compiller for custom assembly for 6502 with so small count instructio
 [txs](#stack-instructions) [tsx](#stack-instructions) [pha](#stack-instructions) [pla](#stack-instructions)
 [dec](#decinc) [inc](#decinc)
 bne beq bcc bcs
-adc 
-clc sec clv and
+adc sbc
+clc sec clv
+cmp cpx cpy 
+and ora eor 
+asl lsr ror rol brk nop   
+
 
 Also have some prefixes for comfort compile and for know what every item mean:
 
@@ -37,28 +107,9 @@ Also have some prefixes for comfort compile and for know what every item mean:
 - *prefix ':'* have two functions, it isn't a command for cpu, is preprocess sign:  
   1. set pos program ex. :$4444 set next commands starts from this value in memory `:$4444`  
   2. set byte in memory ex. :$4444 $44 set byte from $4444 value $44 `:$4444 $44`
-  
-# Settings
-At start program:  
-- For get help message about flags use -h or --help
 
-- If you want execute your program slow and see realtime processor instructions, use flags -g or --gui  
+# Examples and describe operators
 
-- For set path to asm6502 program use flags -p or --prg and after space relative path to asm6502 program  
-
-- For set path to load/save memory file use flags -m or --mem and after space relative path to asm6502 program
-  
-- If you want execute memory from file, use flags -e or --exc 
-
-In [memory.hpp](https://github.com/lemon857/Emulator6502/blob/main/include/memory.h)
-```c++
-// 0x0000 - 0x00FF - Zero Page
-// 0x0100 - 0x01FF - Is a stack page
-// 0x0200 - 0x02FF - I use as data storage
-const Word START_PROGRAM = 0x0300; // 0x0300 - MAX_MEM - our possible using memory
-```
-
-# Examples
 Using [$value] in comments signfy place in memory at $value
 
 ## lda/ldx/ldy

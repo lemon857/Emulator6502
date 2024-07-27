@@ -6,110 +6,163 @@
 
 #define INS_WITHOUT_ARGS(INS, str) {\
     case CPU::INS_##INS: \
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str; \
             break;\
 }
 
 #define INS_BRANCH(INS, str) {\
     case CPU::INS_##INS: \
-            out_data[ptr] = str " $" + WordToStr(ptr + memory.SafeGetByte(ptr+1)); \
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(ptr + (signed char)memory.SafeGetByte(ptr+1)); \
+            nextIsValue++; \
             break;\
 }
 
 #define INS_WITH_ABS_ZP(INS, str) {\
         case CPU::INS_##INS##_ZP:\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
             break;\
         case CPU::INS_##INS##_ABS:\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1));\
+            nextIsValue+=2; \
             break;\
 }
 
 #define INS_WITH_ABS_END(INS, str, XorY, XorYstr) {\
         case CPU::INS_##INS##_ZP:\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
             break;\
         case CPU::INS_##INS##_ZP##XorY:\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", " XorYstr;\
+            nextIsValue++; \
             break;\
         case CPU::INS_##INS##_ABS:\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1));\
+            nextIsValue+=2; \
             break;\
 }
 
 #define INS_WITH_ABS_XYEND(INS, str, XorY, XorYstr){ \
         case CPU::INS_##INS##_IM: \
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " #$" + WordToStr(memory.SafeGetByte(ptr+1)); \
+            nextIsValue++; \
             break; \
         case CPU::INS_##INS##_ZP:\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
             break;\
         case CPU::INS_##INS##_ZP##XorY:\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", " XorYstr;\
+            nextIsValue++; \
             break;\
         case CPU::INS_##INS##_ABS:\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1));\
+            nextIsValue+=2; \
             break;\
         case CPU::INS_##INS##_ABS##XorY:\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", " XorYstr;\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1)) + ", " XorYstr;\
+            nextIsValue+=2; \
             break;\
 }
 
 #define INS_WITH_INDIR(INS, str) {\
         case CPU::INS_##INS##_IM: {\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " #$" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
         }break;\
         case CPU::INS_##INS##_ZP:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
         }break; \
         case CPU::INS_##INS##_ZPX:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", X";\
+            nextIsValue++; \
         }break; \
         case CPU::INS_##INS##_ABS:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; }\
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1));\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_ABSX:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", X";\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1)) + ", X";\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_ABSY:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", Y";\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1)) + ", Y";\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_INDX:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " ($" + WordToStr(memory.SafeGetByte(ptr+1)) + "), X";\
+            nextIsValue++; \
         }break;\
         case CPU::INS_##INS##_INDY:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " ($" + WordToStr(memory.SafeGetByte(ptr+1)) + "), Y";\
+            nextIsValue++; \
         }break;\
 }
         
 #define INS_WITH_INDIR_WITHOUT_IM(INS, str) {\
         case CPU::INS_##INS##_ZP:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            nextIsValue++; \
         }break; \
         case CPU::INS_##INS##_ZPX:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", X";\
+            nextIsValue++; \
         }break; \
         case CPU::INS_##INS##_ABS:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1));\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_ABSX:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", X";\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1)) + ", X";\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_ABSY:{\
-            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1)) + ", Y";\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetWord(ptr+1)) + ", Y";\
+            nextIsValue+=2; \
         }break;\
         case CPU::INS_##INS##_INDX:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " ($" + WordToStr(memory.SafeGetByte(ptr+1)) + "), X";\
+            nextIsValue++; \
         }break;\
         case CPU::INS_##INS##_INDY:{\
+            if (nextIsValue > 0)  { DefaultHandle(memory, ptr); break; } \
             out_data[ptr] = str " ($" + WordToStr(memory.SafeGetByte(ptr+1)) + "), Y";\
+            nextIsValue++; \
         }break;\
 }
 
 // Follow rules, defined in memory.hpp about mark memory
-void Disassembler::Disassembly(Memory& memory)
+void Disassembler::Disassembly(Memory &memory)
 {
-    Word ptr = START_PROGRAM;
+    u32 ptr = START_PROGRAM;
     while (ptr < Memory::MAX_MEM)
     {
         switch (memory.SafeGetByte(ptr))
@@ -158,8 +211,19 @@ void Disassembler::Disassembly(Memory& memory)
             INS_WITH_ABS_END(STX, "stx", Y, "Y");
             INS_WITH_ABS_END(STY, "sty", X, "X");
 
+        case CPU::INS_JMP_ABS: {
+            if (nextIsValue > 0) { DefaultHandle(memory, ptr); break; }
+            out_data[ptr] = "jmp $" + WordToStr(memory.SafeGetWord(ptr + 1));
+            nextIsValue += 2;
+        }break;
+        case CPU::INS_JMP_IND: {
+            if (nextIsValue > 0) { DefaultHandle(memory, ptr); break; }
+            out_data[ptr] = "jmp ($" + WordToStr(memory.SafeGetWord(ptr + 1)) + ")";
+            nextIsValue += 2;
+        }break;
+
         default:
-            out_data[ptr] = WordToStr(memory.SafeGetByte(ptr));
+            DefaultHandle(memory, ptr);
             break;
         }
         ptr++;
@@ -168,6 +232,7 @@ void Disassembler::Disassembly(Memory& memory)
 
 void Disassembler::Init()
 {
+    nextIsValue = 0;
     for (int i = 0; i < Memory::MAX_MEM; i++)
     {
         out_data[i] = "";
@@ -196,4 +261,10 @@ char Disassembler::NumToHex(Byte num)
 {
     if (num < 10) return num + '0';
     return num + 0x57; 
+}
+
+void Disassembler::DefaultHandle(Memory& memory, u32& ptr)
+{
+    out_data[ptr] = WordToStr(memory.SafeGetByte(ptr));
+    if (nextIsValue > 0) nextIsValue--;
 }
