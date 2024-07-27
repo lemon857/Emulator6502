@@ -9,6 +9,9 @@ struct CPU
 {
 	// opcodes
 	static constexpr Byte
+		INS_BRK = 0x00,			// just increment program counter
+		INS_NOP = 0xEA,			// no operation
+
 		INS_TAX = 0xAA,			// transfer A to X
 		INS_TXA = 0x8A,			// transfer X to A
 		INS_DEX = 0xCA,			// decrement X
@@ -17,6 +20,47 @@ struct CPU
 		INS_TYA = 0x98,			// transfer A to Y
 		INS_DEY = 0x88,			// decrement Y
 		INS_INY = 0xC8,			// increment Y
+		
+		INS_ASL_A = 0x0A,		// arithmetic shift left A value
+		INS_ASL_ZP = 0x06,		// arithmetic shift left value (from ZeroPage (8-bit) address)
+		INS_ASL_ZPX = 0x16,		// arithmetic shift left value (from ZeroPage (8-bit) address + value X )
+		INS_ASL_ABS = 0x0E,		// arithmetic shift left value (from absolute address)
+		INS_ASL_ABSX = 0x1E,	// arithmetic shift left value (from absolute address + value X)
+
+		INS_LSR_A = 0x4A,		// logical shift right A value
+		INS_LSR_ZP = 0x46,		// logical shift right value (from ZeroPage (8-bit) address)
+		INS_LSR_ZPX = 0x56,		// logical shift right value (from ZeroPage (8-bit) address + value X )
+		INS_LSR_ABS = 0x4E,		// logical shift right value (from absolute address)
+		INS_LSR_ABSX = 0x5E,	// logical shift right value (from absolute address + value X)
+
+		INS_ROR_A = 0x6A,		// rotate left A value
+		INS_ROR_ZP = 0x66,		// rotate left value (from ZeroPage (8-bit) address)
+		INS_ROR_ZPX = 0x76,		// rotate left value (from ZeroPage (8-bit) address + value X )
+		INS_ROR_ABS = 0x6E,		// rotate left value (from absolute address)
+		INS_ROR_ABSX = 0x7E,	// rotate left value (from absolute address + value X)
+
+		INS_ROL_A = 0x2A,		// rotate right A value
+		INS_ROL_ZP = 0x26,		// rotate right value (from ZeroPage (8-bit) address)
+		INS_ROL_ZPX = 0x36,		// rotate right value (from ZeroPage (8-bit) address + value X )
+		INS_ROL_ABS = 0x2E,		// rotate right value (from absolute address)
+		INS_ROL_ABSX = 0x3E,	// rotate right value (from absolute address + value X)
+
+		INS_CMP_IM = 0xC9,		// compare A and value
+		INS_CMP_ZP = 0xC5,		// compare A and (from ZeroPage (8-bit) address)
+		INS_CMP_ZPX = 0xD5,		// compare A and (from ZeroPage (8-bit) address + value X )
+		INS_CMP_ABS = 0xCD,		// compare A and (from absolute address)
+		INS_CMP_ABSX = 0xDD,	// compare A and (from absolute address + value X)
+		INS_CMP_ABSY = 0xD9,	// compare A and (from absolute address + value Y)
+		INS_CMP_INDX = 0xC1,	// compare A and from address -> (from absolute address + value X)
+		INS_CMP_INDY = 0xD1,	// compare A and from address -> (from absolute address + value Y)
+
+		INS_CPX_IM = 0xE0,		// compare X and value
+		INS_CPX_ZP = 0xE4,		// compare X and (from ZeroPage (8-bit) address)
+		INS_CPX_ABS = 0xEC,		// compare X and (from absolute address)
+
+		INS_CPY_IM = 0xC0,		// compare Y and value
+		INS_CPY_ZP = 0xC4,		// compare Y and (from ZeroPage (8-bit) address)
+		INS_CPY_ABS = 0xCC,		// compare Y and (from absolute address)
 
 		INS_ADC_IM = 0x69,		// add with carry A and value
 		INS_ADC_ZP = 0x65,		// add with carry A and (from ZeroPage (8-bit) address)

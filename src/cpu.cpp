@@ -54,6 +54,103 @@ void CPU::Step(u32& cycles, Memory& memory)
 			LoadRegisterSetStatus(Y);
 		}	break;
 
+
+		case INS_CPX_IM: {
+			Byte value = FetchByte(cycles, memory);
+			if (X == value) C = 1;
+			LoadRegisterSetStatus(X);
+		}	break;
+		case INS_CPX_ZP: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte value = ReadByteFromZeroPage(cycles, ZPaddr, memory);
+			if (X == value) C = 1;
+			LoadRegisterSetStatus(X);
+		}	break;
+		case INS_CPX_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			Byte value = ReadByte(cycles, addr, memory);
+			if (X == value) C = 1;
+			LoadRegisterSetStatus(X);
+		}	break;
+
+		case INS_CPY_IM: {
+			Byte value = FetchByte(cycles, memory);
+			if (Y == value) C = 1;
+			LoadRegisterSetStatus(Y);
+		}	break;
+		case INS_CPY_ZP: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte value = ReadByteFromZeroPage(cycles, ZPaddr, memory);
+			if (Y == value) C = 1;
+			LoadRegisterSetStatus(Y);
+		}	break;
+		case INS_CPY_ABS: {
+			Word addr = FetchWord(cycles, memory);
+			Byte value = ReadByte(cycles, addr, memory);
+			if (Y == value) C = 1;
+			LoadRegisterSetStatus(Y);
+		}	break;
+
+		case INS_CMP_IM: {
+			Byte value = FetchByte(cycles, memory);
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break; 
+		case INS_CMP_ZP: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte value = ReadByteFromZeroPage(cycles, ZPaddr, memory);
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_ZPX: {
+			Byte ZPaddr = FetchByte(cycles, memory);
+			Byte value = ReadByteFromZeroPage(cycles, ZPaddr, memory);
+			value += X;
+			cycles--;
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_ABS: {
+			Word addr = FetchByte(cycles, memory);
+			Byte value = ReadByte(cycles, addr, memory);
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_ABSX: {
+			Word addr = FetchByte(cycles, memory);
+			Byte value = ReadByte(cycles, addr, memory);
+			value += X;
+			cycles--;
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_ABSY: {
+			Word addr = FetchByte(cycles, memory);
+			Byte value = ReadByte(cycles, addr, memory);
+			value += Y;
+			cycles--;
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_INDX: {
+			Byte addr = FetchByte(cycles, memory);
+			addr += X;
+			cycles--;
+			Byte valAddr = ReadByteFromZeroPage(cycles, addr, memory);
+			Byte value = ReadByte(cycles, valAddr, memory);
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+		case INS_CMP_INDY: {
+			Byte addr = FetchByte(cycles, memory);
+			addr += Y;
+			cycles--;
+			Byte valAddr = ReadByteFromZeroPage(cycles, addr, memory);
+			Byte value = ReadByte(cycles, valAddr, memory);
+			if (A == value) C = 1;
+			LoadRegisterSetStatus(A);
+		}	break;
+
 		case INS_ADC_IM: {
 			Byte op = FetchByte(cycles, memory);
 			const Byte oldA = A;

@@ -13,6 +13,7 @@ struct Disassembler
     void Init();
     std::string WordToStr(Word value);
     char NumToHex(Byte num);
+    // Get disasm str
     const char* operator[](Word address)
     {
         return out_data[address].c_str();

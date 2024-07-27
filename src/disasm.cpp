@@ -16,6 +16,15 @@
             break;\
 }
 
+#define INS_WITH_ABS_ZP(INS, str) {\
+        case CPU::INS_##INS##_ZP:\
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            break;\
+        case CPU::INS_##INS##_ABS:\
+            out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
+            break;\
+}
+
 #define INS_WITH_ABS_END(INS, str, XorY, XorYstr) {\
         case CPU::INS_##INS##_ZP:\
             out_data[ptr] = str " $" + WordToStr(memory.SafeGetByte(ptr+1));\
@@ -105,44 +114,49 @@ void Disassembler::Disassembly(Memory& memory)
     {
         switch (memory.SafeGetByte(ptr))
         {
-        INS_WITHOUT_ARGS(TAX, "tax")
-        INS_WITHOUT_ARGS(TXA, "txa")
-        INS_WITHOUT_ARGS(TAY, "tay")
-        INS_WITHOUT_ARGS(TYA, "tya")
-        INS_WITHOUT_ARGS(DEX, "dex")
-        INS_WITHOUT_ARGS(DEY, "dey")
-        INS_WITHOUT_ARGS(INX, "inx")
-        INS_WITHOUT_ARGS(INY, "iny")
+            INS_WITHOUT_ARGS(TAX, "tax");
+            INS_WITHOUT_ARGS(TXA, "txa");
+            INS_WITHOUT_ARGS(TAY, "tay");
+            INS_WITHOUT_ARGS(TYA, "tya");
+            INS_WITHOUT_ARGS(DEX, "dex");
+            INS_WITHOUT_ARGS(DEY, "dey");
+            INS_WITHOUT_ARGS(INX, "inx");
+            INS_WITHOUT_ARGS(INY, "iny");
 
-        INS_WITHOUT_ARGS(CLC, "clc")
-        INS_WITHOUT_ARGS(SEC, "sec")
-        INS_WITHOUT_ARGS(CLV, "clv")
+            INS_WITHOUT_ARGS(CLC, "clc");
+            INS_WITHOUT_ARGS(SEC, "sec");
+            INS_WITHOUT_ARGS(CLV, "clv");
 
-        INS_WITHOUT_ARGS(TXS, "txs")
-        INS_WITHOUT_ARGS(TSX, "tsx")
-        INS_WITHOUT_ARGS(PHA, "pha")
-        INS_WITHOUT_ARGS(PLA, "pla")
+            INS_WITHOUT_ARGS(TXS, "txs");
+            INS_WITHOUT_ARGS(TSX, "tsx");
+            INS_WITHOUT_ARGS(PHA, "pha");
+            INS_WITHOUT_ARGS(PLA, "pla");
 
-        INS_BRANCH(BEQ, "beq")
-        INS_BRANCH(BNE, "bne")
-        INS_BRANCH(BCS, "bcs")
-        INS_BRANCH(BCC, "bcc")
+            INS_BRANCH(BEQ, "beq");
+            INS_BRANCH(BNE, "bne");
+            INS_BRANCH(BCS, "bcs");
+            INS_BRANCH(BCC, "bcc");
 
-        INS_WITH_INDIR(LDA, "lda")
+            INS_WITH_INDIR(CMP, "cmp");
 
-        INS_WITH_ABS_XYEND(LDX, "ldx", Y, "Y")                
-        INS_WITH_ABS_XYEND(LDY, "ldy", X, "X")
+            INS_WITH_ABS_ZP(CPX, "cpx");
+            INS_WITH_ABS_ZP(CPY, "cpy");
 
-        INS_WITH_INDIR(ADC, "adc");
-        INS_WITH_INDIR(SBC, "sbc");
+            INS_WITH_INDIR(LDA, "lda");
 
-        INS_WITH_INDIR(AND, "and");
-        INS_WITH_INDIR(ORA, "ora");
-        INS_WITH_INDIR(EOR, "eor");
+            INS_WITH_ABS_XYEND(LDX, "ldx", Y, "Y");
+            INS_WITH_ABS_XYEND(LDY, "ldy", X, "X");
 
-        INS_WITH_INDIR_WITHOUT_IM(STA, "sta");
-        INS_WITH_ABS_END(STX, "stx", Y, "Y")
-        INS_WITH_ABS_END(STY, "sty", X, "X")
+            INS_WITH_INDIR(ADC, "adc");
+            INS_WITH_INDIR(SBC, "sbc");
+
+            INS_WITH_INDIR(AND, "and");
+            INS_WITH_INDIR(ORA, "ora");
+            INS_WITH_INDIR(EOR, "eor");
+
+            INS_WITH_INDIR_WITHOUT_IM(STA, "sta");
+            INS_WITH_ABS_END(STX, "stx", Y, "Y");
+            INS_WITH_ABS_END(STY, "sty", X, "X");
 
         default:
             out_data[ptr] = WordToStr(memory.SafeGetByte(ptr));

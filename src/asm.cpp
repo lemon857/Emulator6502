@@ -112,26 +112,6 @@ void Assembler::Compile(std::string sourceCodePath, Memory& memory)
 	}
 	std::cout << "Successful compile!\n";
 }
-/*else if (arg[0] == '.')
-			{
-				auto it = pointPseudonyms.find(arg);
-				if (it != pointPseudonyms.end())
-				{
-					A = it->second;
-					memory.SafeGetByte(pos++) = CPU::INS_LDA_ABS;
-					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
-					memory.SafeGetByte(pos++) = (A & 0x00FF);
-				}
-				else
-				{
-					RequirePointName rpn;
-					rpn.name = arg;
-					memory.SafeGetByte(pos++) = CPU::INS_LDA_ABS;
-					rpn.posReq = pos;
-					pos += 2;
-					pseudonymsReq.push(rpn);
-				}
-			}*/
 
 void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, Memory& memory, Word& pos)
 {
@@ -803,7 +783,7 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 			len = arg.length();
 			if ((p = arg.find('$')) != -1)
 			{
-				A = StrToWord(arg.substr(p + 1)); 
+				A = StrToWord(arg.substr(p + 1));
 				if (arg[0] == '#' && len > 2 && len <= 4)	// hexadecemal value
 				{
 					memory.SafeGetByte(pos++) = CPU::INS_SBC_IM;
@@ -823,6 +803,111 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 				else
 				{
 					ErrorHandler("error too much address at: " + std::to_string(pos));
+				}
+			}
+		}
+		else if (ins == "cmp")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CMP_IM;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (arg[0] == '#' && len > 4)
+				{
+					ErrorHandler("error too much simple value arg: " + arg);
+				}
+				else if (len == 3)				// ZeroPointer
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CMP_ZP;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CMP_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address arg: " + arg);
+				}
+			}
+		}
+		else if (ins == "cpx")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPX_IM;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (arg[0] == '#' && len > 4)
+				{
+					ErrorHandler("error too much simple value arg: " + arg);
+				}
+				else if (len == 3)				// ZeroPointer
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPX_ZP;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPX_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address arg: " + arg);
+				}
+			}
+		}
+		else if (ins == "cpy")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('$')) != -1)
+			{
+				A = StrToWord(arg.substr(p + 1));
+				if (arg[0] == '#' && len > 2 && len <= 4) // hexadecemal value
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPY_IM;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (arg[0] == '#' && len > 4)
+				{
+					ErrorHandler("error too much simple value arg: " + arg);
+				}
+				else if (len == 3)				// ZeroPointer
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPY_ZP;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (len > 3 && len <= 5)	// absolute address
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CPY_ABS;
+					memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+					memory.SafeGetByte(pos++) = (A & 0x00FF);
+				}
+				else
+				{
+					ErrorHandler("error too much address arg: " + arg);
 				}
 			}
 			}
@@ -1379,7 +1464,62 @@ void Assembler::HandleIns(std::string ins, std::string arg1, std::string arg2, M
 					memory.SafeGetByte(pos++) = A;
 				}
 			}
+		}
+		else if (ins == "cmp")
+		{
+			Word A;
+			int p, len;
+			std::string arg = arg1;
+			len = arg.length();
+			if ((p = arg.find('(')) == -1)
+			{
+				if ((p = arg.find('$')) != -1)
+				{
+					A = StrToWord(arg.substr(p + 1));
+					if (len == 3)					// ZeroPointer
+					{
+						if (arg2 == "X")
+						{
+							memory.SafeGetByte(pos++) = CPU::INS_CMP_ZPX;
+							memory.SafeGetByte(pos++) = A;
+						}
+					}
+					else if (len > 3 && len <= 5)	// absolute address
+					{
+						if (arg2 == "X")
+						{
+							memory.SafeGetByte(pos++) = CPU::INS_CMP_ABSX;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
+						}
+						else if (arg2 == "Y")
+						{
+							memory.SafeGetByte(pos++) = CPU::INS_CMP_ABSY;
+							memory.SafeGetByte(pos++) = (A & 0xFF00) >> 8;
+							memory.SafeGetByte(pos++) = (A & 0x00FF);
+						}
+					}
+					else
+					{
+						ErrorHandler("error too much address at: " + std::to_string(pos));
+					}
+				}
 			}
+			else // indirect
+			{
+				A = StrToWord(arg.substr(p + 2, arg.find(')') - p - 2));
+				if (arg2 == "X")
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CMP_INDX;
+					memory.SafeGetByte(pos++) = A;
+				}
+				else if (arg2 == "Y")
+				{
+					memory.SafeGetByte(pos++) = CPU::INS_CMP_INDY;
+					memory.SafeGetByte(pos++) = A;
+				}
+			}
+		}
 		else
 		{
 			ErrorHandler("invalid instrucion: " + ins);

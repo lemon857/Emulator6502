@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	printf("Path: %s\n Path prg: %s\n Path mem: %s\n", path.c_str(), pathToPrg.c_str(), pathToMem.c_str());
+	printf("Path: %s\nPath prg: %s\nPath mem: %s\nPress enter for continue\n", path.c_str(), pathToPrg.c_str(), pathToMem.c_str());
 	getchar();
 	if (fromMemoryExecute) Assembler::LoadMemory(path + pathToMem, mem);
 	else Assembler::Compile(path + pathToPrg, mem);
